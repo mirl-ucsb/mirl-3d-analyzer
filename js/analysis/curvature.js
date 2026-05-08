@@ -51,6 +51,20 @@ export function computeCurvature(geo) {
   }
   for(let f=0;f<nF;f++){const a=getI(f,0),b=getI(f,1),c=getI(f,2);[a,b,c].forEach(v=>vArea[v]+=fArea[f]/3);}
 
+  // Build boundary-vertex set: edges referenced by exactly one face are open edges;
+  // their vertices are on the boundary where Gaussian curvature is ill-defined.
+  const edgeCount = new Map();
+  const eKey = (a, b) => a < b ? `${a}|${b}` : `${b}|${a}`;
+  for (let f = 0; f < nF; f++) {
+    const a = getI(f,0), b = getI(f,1), c = getI(f,2);
+    for (const k of [eKey(a,b), eKey(b,c), eKey(c,a)])
+      edgeCount.set(k, (edgeCount.get(k) || 0) + 1);
+  }
+  const boundaryVerts = new Set();
+  for (const [k, cnt] of edgeCount) {
+    if (cnt === 1) { const [a,b] = k.split('|').map(Number); boundaryVerts.add(a); boundaryVerts.add(b); }
+  }
+
   const mean=new Float32Array(nV), gauss=new Float32Array(nV), curv=new Float32Array(nV);
   for(let i=0;i<nV;i++){
     const pi=getP(i); const lap=new THREE.Vector3(); let ws=0;
@@ -60,9 +74,20 @@ export function computeCurvature(geo) {
     mean[i]=sg*lap.length()*.5;
   }
   for(let i=0;i<nV;i++){
+    if(boundaryVerts.has(i)){ gauss[i]=0; continue; }
     let aSum=0;for(const fi of vFaces[i])aSum+=faceAngle(fi,i);
     gauss[i]=vArea[i]>1e-12?(2*Math.PI-aSum)/vArea[i]:0;
   }
+  // Clamp Gaussian curvature to p2–p98 of interior values to suppress outliers.
+  const interiorG = [];
+  for(let i=0;i<nV;i++) if(!boundaryVerts.has(i) && isFinite(gauss[i])) interiorG.push(gauss[i]);
+  if(interiorG.length > 1) {
+    interiorG.sort((a,b)=>a-b);
+    const lo = interiorG[Math.floor(interiorG.length * 0.02)];
+    const hi = interiorG[Math.floor(interiorG.length * 0.98)];
+    for(let i=0;i<nV;i++) gauss[i] = Math.max(lo, Math.min(hi, gauss[i]));
+  }
+
   for(let i=0;i<nV;i++){
     const H=mean[i],K=gauss[i];
     const disc=Math.max(H*H-K,0);const root=Math.sqrt(disc);

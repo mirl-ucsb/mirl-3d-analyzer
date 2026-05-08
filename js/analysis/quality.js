@@ -62,8 +62,8 @@ export function computeQuality(geo) {
   const sz = new THREE.Vector3();
   bb.getSize(sz);
 
-  const densityScore = Math.min(40, nV / 5000 * 40);
-  const uniformScore = uniformity * 40;
+  const densityScore = Math.min(55, nV / 5000 * 55);
+  const uniformScore = uniformity * 25;   // softer penalty: structured-light scans have inherent density variation
   const holeScore    = Math.max(0, 20 - holeCount * 4);
   const total = Math.round(densityScore + uniformScore + holeScore);
 
