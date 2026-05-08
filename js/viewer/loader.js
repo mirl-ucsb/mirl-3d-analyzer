@@ -75,9 +75,6 @@ export async function loadOBJ(files, onDone) {
     let geo=null;
     grp.traverse(ch=>{if(ch.isMesh&&!geo)geo=ch.geometry.clone().applyMatrix4(ch.matrixWorld);});
     if(!geo){hideLoad();alert('No mesh found.');return null;}
-    // OBJLoader produces non-indexed triangle soup; merge coincident vertices so
-    // half-edge analysis and curvature neighbours work correctly.
-    if(!geo.index) geo = mergeVertices(geo);
     geo.computeVertexNormals();geo.computeBoundingBox();
     const bb=geo.boundingBox,c=new THREE.Vector3(),s=new THREE.Vector3();
     bb.getCenter(c);bb.getSize(s);

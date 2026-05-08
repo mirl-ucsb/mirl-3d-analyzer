@@ -24,25 +24,40 @@ export function computeQuality(geo) {
   const varA = areas.reduce((s, a) => s + (a - meanA) ** 2, 0) / areas.length;
   const uniformity = Math.max(0, 1 - Math.sqrt(varA) / (meanA + 1e-12));
 
-  const edgeMap = {};
+  // Build position-canonical index map so edge deduplication works regardless of
+  // whether the geometry uses shared vertex indices (OBJLoader r160 creates indexed
+  // geometry but with no shared indices — every vertex is unique in the index buffer).
+  const posToCanon = new Map();
+  const canon = new Int32Array(nV);
+  for (let i = 0; i < nV; i++) {
+    const k = `${pos.getX(i)}|${pos.getY(i)}|${pos.getZ(i)}`;
+    if (!posToCanon.has(k)) posToCanon.set(k, i);
+    canon[i] = posToCanon.get(k);
+  }
+  console.log(`[MIRL quality] nV=${nV}, nF=${nF}, indexed=${!!idx}, unique positions=${posToCanon.size}`);
+
+  const edgeMap = new Map();
   const eKey = (a, b) => a < b ? `${a}|${b}` : `${b}|${a}`;
   for (let f = 0; f < nF; f++) {
-    const a = getI(f, 0), b = getI(f, 1), c = getI(f, 2);
-    [eKey(a, b), eKey(b, c), eKey(c, a)].forEach(k => { edgeMap[k] = (edgeMap[k] || 0) + 1; });
+    const a = canon[getI(f, 0)], b = canon[getI(f, 1)], c = canon[getI(f, 2)];
+    for (const k of [eKey(a, b), eKey(b, c), eKey(c, a)])
+      edgeMap.set(k, (edgeMap.get(k) || 0) + 1);
   }
-  const boundaryEdges = Object.values(edgeMap).filter(v => v === 1).length;
+  let boundaryEdges = 0, interiorEdges = 0;
+  for (const v of edgeMap.values()) { if (v === 1) boundaryEdges++; else if (v === 2) interiorEdges++; }
+  console.log(`[MIRL quality] edges total=${edgeMap.size}, boundary(=1)=${boundaryEdges}, interior(=2)=${interiorEdges}`);
 
   // Build adjacency for boundary vertices so we can trace connected loops
-  const bAdj = {};
-  for (const [k, cnt] of Object.entries(edgeMap)) {
+  const bAdj = new Map();
+  for (const [k, cnt] of edgeMap) {
     if (cnt !== 1) continue;
     const [a, b] = k.split('|').map(Number);
-    (bAdj[a] = bAdj[a] || []).push(b);
-    (bAdj[b] = bAdj[b] || []).push(a);
+    if (!bAdj.has(a)) bAdj.set(a, []); bAdj.get(a).push(b);
+    if (!bAdj.has(b)) bAdj.set(b, []); bAdj.get(b).push(a);
   }
   const seen = new Set();
   const loops = [];
-  for (const v of Object.keys(bAdj).map(Number)) {
+  for (const v of bAdj.keys()) {
     if (seen.has(v)) continue;
     const members = [];
     const stack = [v];
@@ -50,7 +65,7 @@ export function computeQuality(geo) {
       const cur = stack.pop();
       if (seen.has(cur)) continue;
       seen.add(cur); members.push(cur);
-      for (const nb of bAdj[cur]) if (!seen.has(nb)) stack.push(nb);
+      for (const nb of bAdj.get(cur)) if (!seen.has(nb)) stack.push(nb);
     }
     loops.push(members);
   }

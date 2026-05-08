@@ -51,12 +51,20 @@ export function computeCurvature(geo) {
   }
   for(let f=0;f<nF;f++){const a=getI(f,0),b=getI(f,1),c=getI(f,2);[a,b,c].forEach(v=>vArea[v]+=fArea[f]/3);}
 
-  // Build boundary-vertex set: edges referenced by exactly one face are open edges;
-  // their vertices are on the boundary where Gaussian curvature is ill-defined.
+  // Build position-canonical map first so edge deduplication is geometry-format agnostic.
+  const posToCanon = new Map();
+  const canon = new Int32Array(nV);
+  for (let i = 0; i < nV; i++) {
+    const k = `${pos.getX(i)}|${pos.getY(i)}|${pos.getZ(i)}`;
+    if (!posToCanon.has(k)) posToCanon.set(k, i);
+    canon[i] = posToCanon.get(k);
+  }
+
+  // Build boundary-vertex set using canonical indices.
   const edgeCount = new Map();
   const eKey = (a, b) => a < b ? `${a}|${b}` : `${b}|${a}`;
   for (let f = 0; f < nF; f++) {
-    const a = getI(f,0), b = getI(f,1), c = getI(f,2);
+    const a = canon[getI(f,0)], b = canon[getI(f,1)], c = canon[getI(f,2)];
     for (const k of [eKey(a,b), eKey(b,c), eKey(c,a)])
       edgeCount.set(k, (edgeCount.get(k) || 0) + 1);
   }
@@ -64,6 +72,7 @@ export function computeCurvature(geo) {
   for (const [k, cnt] of edgeCount) {
     if (cnt === 1) { const [a,b] = k.split('|').map(Number); boundaryVerts.add(a); boundaryVerts.add(b); }
   }
+  console.log(`[MIRL curv] nV=${nV}, boundaryVerts=${boundaryVerts.size}, interior=${nV - boundaryVerts.size}`);
 
   const mean=new Float32Array(nV), gauss=new Float32Array(nV), curv=new Float32Array(nV);
   for(let i=0;i<nV;i++){
@@ -73,18 +82,21 @@ export function computeCurvature(geo) {
     const sg=lap.dot(vNorm[i])<0?1:-1;
     mean[i]=sg*lap.length()*.5;
   }
+  // If boundary detection captured nearly every vertex (edge fix not yet effective),
+  // fall back to clamping all values rather than zeroing most of the mesh.
+  const useBoundaryExclusion = boundaryVerts.size < nV * 0.9;
   for(let i=0;i<nV;i++){
-    if(boundaryVerts.has(i)){ gauss[i]=0; continue; }
+    if(useBoundaryExclusion && boundaryVerts.has(i)){ gauss[i]=0; continue; }
     let aSum=0;for(const fi of vFaces[i])aSum+=faceAngle(fi,i);
     gauss[i]=vArea[i]>1e-12?(2*Math.PI-aSum)/vArea[i]:0;
   }
-  // Clamp Gaussian curvature to p2–p98 of interior values to suppress outliers.
-  const interiorG = [];
-  for(let i=0;i<nV;i++) if(!boundaryVerts.has(i) && isFinite(gauss[i])) interiorG.push(gauss[i]);
-  if(interiorG.length > 1) {
-    interiorG.sort((a,b)=>a-b);
-    const lo = interiorG[Math.floor(interiorG.length * 0.02)];
-    const hi = interiorG[Math.floor(interiorG.length * 0.98)];
+  // Clamp to p2–p98 of finite values to suppress outliers.
+  const validG = [];
+  for(let i=0;i<nV;i++) if(isFinite(gauss[i]) && gauss[i] !== 0) validG.push(gauss[i]);
+  if(validG.length > 1) {
+    validG.sort((a,b)=>a-b);
+    const lo = validG[Math.floor(validG.length * 0.02)];
+    const hi = validG[Math.floor(validG.length * 0.98)];
     for(let i=0;i<nV;i++) gauss[i] = Math.max(lo, Math.min(hi, gauss[i]));
   }
 
