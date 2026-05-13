@@ -25,14 +25,6 @@ Department of History of Art & Architecture, UC Santa Barbara.
 
 ## Running
 
-No build step. Serve the project root over a static HTTP server (needed
-for ES modules and CORS-clean OBJ loading):
-
-```bash
-cd mirl-3d-analyzer
-python3 -m http.server 8000
-```
-
 To access the local server database: 
 ```bash
 cd mirl-3d-analyzer
@@ -40,8 +32,6 @@ cd backend
 python3 mirl-db-server.py
 ```
 
-
-Open <http://localhost:8000> in your browser. 
 
 > **Note:** opening `index.html` directly by double-clicking (via `file://`)
 > will **not** work — browsers refuse to load ES modules from `file://`.
