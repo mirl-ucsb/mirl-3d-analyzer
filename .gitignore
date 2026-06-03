@@ -1,1 +1,5 @@
 .mirl-storage-path
+
+# macOS Finder metadata
+.DS_Store
+**/.DS_Store
