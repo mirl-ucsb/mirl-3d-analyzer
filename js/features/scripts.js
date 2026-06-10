@@ -23,8 +23,8 @@ const SCRIPTS = {
 
 log("Model loaded: " + nVerts + " vertices");
 log("Mean curvature range: " +
-  Math.min(...curvature.mean).toFixed(4) + " to " +
-  Math.max(...curvature.mean).toFixed(4));
+  curvature.mean.reduce((a,b)=>Math.min(a,b), Infinity).toFixed(4) + " to " +
+  curvature.mean.reduce((a,b)=>Math.max(a,b), -Infinity).toFixed(4));
 
 // Example: visualize mean curvature
 colorFromValues(curvature.mean, 'turbo');
@@ -91,7 +91,7 @@ const zVals = new Float32Array(nVerts);
 for (let i = 0; i < nVerts; i++) {
   zVals[i] = positions[i * 3 + 2]; // z coordinate
 }
-log("Z range: " + Math.min(...zVals).toFixed(3) + " to " + Math.max(...zVals).toFixed(3));
+log("Z range: " + zVals.reduce((a,b)=>Math.min(a,b), Infinity).toFixed(3) + " to " + zVals.reduce((a,b)=>Math.max(a,b), -Infinity).toFixed(3));
 colorFromValues(zVals, 'viridis');
 `
   },
@@ -109,19 +109,38 @@ colorFromValues(upY, 'coolwarm');
   },
   boundary: {
     title:'Boundary Proximity',
-    code:`// Simple proxy: vertices with lower neighbor count are near boundaries
-// (Approximate — full geodesic distance requires more computation)
-const degree = new Float32Array(nVerts);
+    code:`// Vertex face-degree: low degree → near mesh boundary.
+// Deduplicates positions first so non-indexed OBJ meshes work correctly.
+const pos = geometry.attributes.position;
+const posToCanon = new Map();
+const canon = new Int32Array(nVerts);
+const canonOrig = [];
+for (let i = 0; i < nVerts; i++) {
+  const k = pos.getX(i) + '|' + pos.getY(i) + '|' + pos.getZ(i);
+  if (!posToCanon.has(k)) { posToCanon.set(k, canonOrig.length); canonOrig.push(i); }
+  canon[i] = posToCanon.get(k);
+}
+const nCanon = canonOrig.length;
+
+const degree = new Float32Array(nCanon);
 const idx = geometry.index;
 const nF = idx ? idx.count / 3 : nVerts / 3;
 const getI = idx ? (f,v) => idx.getX(f*3+v) : (f,v) => f*3+v;
 for (let f = 0; f < nF; f++) {
-  [getI(f,0),getI(f,1),getI(f,2)].forEach(v => degree[v]++);
+  degree[canon[getI(f,0)]]++;
+  degree[canon[getI(f,1)]]++;
+  degree[canon[getI(f,2)]]++;
 }
-log("Min vertex degree: " + Math.min(...degree));
-log("Max vertex degree: " + Math.max(...degree));
-log("Mean degree: " + (degree.reduce((a,b)=>a+b,0)/nVerts).toFixed(1));
-colorFromValues(degree, 'viridis');
+
+// Broadcast canonical degree back to every buffer vertex for coloring
+const degreeAll = new Float32Array(nVerts);
+for (let i = 0; i < nVerts; i++) degreeAll[i] = degree[canon[i]];
+
+log("Unique vertices: " + nCanon + " (buffer has " + nVerts + ")");
+log("Min vertex degree: " + degree.reduce((a,b)=>Math.min(a,b), Infinity));
+log("Max vertex degree: " + degree.reduce((a,b)=>Math.max(a,b), -Infinity));
+log("Mean degree: " + (degree.reduce((a,b)=>a+b,0)/nCanon).toFixed(1));
+colorFromValues(degreeAll, 'viridis');
 `
   }
 };

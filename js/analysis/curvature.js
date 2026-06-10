@@ -14,21 +14,43 @@ export function computeCurvature(geo) {
   const nV = pos.count;
   const getI = idx ? (f,v)=>idx.getX(f*3+v) : (f,v)=>f*3+v;
   const nF = idx ? idx.count/3 : nV/3;
+  // getP works on original indices; canonical indices are always the first
+  // original index that maps to a given position, so getP(canonicalIdx) is valid.
   const getP = i => new THREE.Vector3(pos.getX(i),pos.getY(i),pos.getZ(i));
 
-  const neighbors = Array.from({length:nV},()=>new Set());
-  const vFaces = Array.from({length:nV},()=>[]);
+  // ── Step 1: canonical vertex map ─────────────────────────────────────────
+  // OBJ files loaded by Three.js are typically non-indexed: every face has 3
+  // unique vertex entries even when positions are shared.  Without deduplication
+  // each vertex appears in exactly 1 face, breaking every adjacency-based
+  // computation.  We map duplicate positions to compact indices 0..nC-1 and
+  // keep canonOrig[ci] → one original vertex index so we can look up positions.
+  const posToCanon = new Map(); // position string → compact canonical index [0,nC-1]
+  const canon      = new Int32Array(nV); // original idx → compact canonical idx
+  const canonOrig  = [];                 // compact canonical idx → original idx
+  for (let i = 0; i < nV; i++) {
+    const k = `${pos.getX(i)}|${pos.getY(i)}|${pos.getZ(i)}`;
+    if (!posToCanon.has(k)) { posToCanon.set(k, canonOrig.length); canonOrig.push(i); }
+    canon[i] = posToCanon.get(k);
+  }
+  const nC = canonOrig.length; // number of geometrically unique vertices
+  // getPC(ci): position of canonical vertex ci (uses its stored original index)
+  const getPC = ci => getP(canonOrig[ci]);
+
+  // ── Step 2: neighbors and face adjacency on canonical vertices ───────────
+  const neighbors = Array.from({length:nC},()=>new Set());
+  const vFaces    = Array.from({length:nC},()=>[]);
   for(let f=0;f<nF;f++){
-    const a=getI(f,0),b=getI(f,1),c=getI(f,2);
-    neighbors[a].add(b);neighbors[a].add(c);
-    neighbors[b].add(a);neighbors[b].add(c);
-    neighbors[c].add(a);neighbors[c].add(b);
-    vFaces[a].push(f);vFaces[b].push(f);vFaces[c].push(f);
+    const a=canon[getI(f,0)], b=canon[getI(f,1)], c=canon[getI(f,2)];
+    neighbors[a].add(b); neighbors[a].add(c);
+    neighbors[b].add(a); neighbors[b].add(c);
+    neighbors[c].add(a); neighbors[c].add(b);
+    vFaces[a].push(f);   vFaces[b].push(f);   vFaces[c].push(f);
   }
 
+  // ── Step 3: face areas and normals ───────────────────────────────────────
   const fNorm=[],fArea=[];
   for(let f=0;f<nF;f++){
-    const pa=getP(getI(f,0)),pb=getP(getI(f,1)),pc=getP(getI(f,2));
+    const pa=getP(getI(f,0)), pb=getP(getI(f,1)), pc=getP(getI(f,2));
     const ab=new THREE.Vector3().subVectors(pb,pa);
     const ac=new THREE.Vector3().subVectors(pc,pa);
     const cr=new THREE.Vector3().crossVectors(ab,ac);
@@ -36,76 +58,116 @@ export function computeCurvature(geo) {
     if(a>1e-12)cr.normalize(); fNorm.push(cr);
   }
 
-  const vNorm=[], vArea=new Float32Array(nV);
-  for(let i=0;i<nV;i++){const n=new THREE.Vector3();for(const fi of vFaces[i])n.addScaledVector(fNorm[fi],fArea[fi]);if(n.length()>1e-12)n.normalize();vNorm.push(n);}
-
-  function faceAngle(f,vi){
-    const a=getI(f,0),b=getI(f,1),c=getI(f,2);
-    let v,u1,u2;
-    if(vi===a){v=getP(a);u1=getP(b);u2=getP(c);}
-    else if(vi===b){v=getP(b);u1=getP(a);u2=getP(c);}
-    else{v=getP(c);u1=getP(a);u2=getP(b);}
-    const d1=new THREE.Vector3().subVectors(u1,v).normalize();
-    const d2=new THREE.Vector3().subVectors(u2,v).normalize();
-    return Math.acos(Math.max(-1,Math.min(1,d1.dot(d2))));
+  // ── Step 4: per-canonical-vertex normals and mixed areas ─────────────────
+  const vNorm=[], vArea=new Float32Array(nC);
+  for(let i=0;i<nC;i++){
+    const n=new THREE.Vector3();
+    for(const fi of vFaces[i]) n.addScaledVector(fNorm[fi],fArea[fi]);
+    if(n.length()>1e-12)n.normalize();
+    vNorm.push(n);
   }
-  for(let f=0;f<nF;f++){const a=getI(f,0),b=getI(f,1),c=getI(f,2);[a,b,c].forEach(v=>vArea[v]+=fArea[f]/3);}
-
-  // Build position-canonical map first so edge deduplication is geometry-format agnostic.
-  const posToCanon = new Map();
-  const canon = new Int32Array(nV);
-  for (let i = 0; i < nV; i++) {
-    const k = `${pos.getX(i)}|${pos.getY(i)}|${pos.getZ(i)}`;
-    if (!posToCanon.has(k)) posToCanon.set(k, i);
-    canon[i] = posToCanon.get(k);
+  for(let f=0;f<nF;f++){
+    const a=canon[getI(f,0)], b=canon[getI(f,1)], c=canon[getI(f,2)];
+    [a,b,c].forEach(v=>vArea[v]+=fArea[f]/3);
   }
 
-  // Build boundary-vertex set using canonical indices.
+  // ── Step 5: cotangent weights for Laplace-Beltrami ───────────────────────
+  // For each face (A,B,C) the cotangent at vertex A is dot(AB,AC)/|AB×AC|.
+  // Each edge (i,j) accumulates the cotangents from the (up to two) faces that
+  // share it.  This gives the standard cotan-LB operator, which correctly
+  // recovers mean curvature magnitude regardless of mesh resolution.
+  const cotW = Array.from({length:nC}, ()=>new Map());
+  for(let f=0;f<nF;f++){
+    const ai=canon[getI(f,0)], bi=canon[getI(f,1)], ci=canon[getI(f,2)];
+    if(ai===bi||bi===ci||ai===ci) continue; // degenerate face
+    const area2 = 2*fArea[f];              // |AB×AC| = 2·area
+    if(area2 < 1e-20) continue;
+    const pa=getPC(ai), pb=getPC(bi), pc=getPC(ci);
+    // cotangent at each vertex
+    const cotA = new THREE.Vector3().subVectors(pb,pa)
+                   .dot(new THREE.Vector3().subVectors(pc,pa)) / area2;
+    const cotB = new THREE.Vector3().subVectors(pa,pb)
+                   .dot(new THREE.Vector3().subVectors(pc,pb)) / area2;
+    const cotC = new THREE.Vector3().subVectors(pa,pc)
+                   .dot(new THREE.Vector3().subVectors(pb,pc)) / area2;
+    // cot at A → contributes to edge (B,C)
+    cotW[bi].set(ci,(cotW[bi].get(ci)||0)+cotA);
+    cotW[ci].set(bi,(cotW[ci].get(bi)||0)+cotA);
+    // cot at B → contributes to edge (A,C)
+    cotW[ai].set(ci,(cotW[ai].get(ci)||0)+cotB);
+    cotW[ci].set(ai,(cotW[ci].get(ai)||0)+cotB);
+    // cot at C → contributes to edge (A,B)
+    cotW[ai].set(bi,(cotW[ai].get(bi)||0)+cotC);
+    cotW[bi].set(ai,(cotW[bi].get(ai)||0)+cotC);
+  }
+
+  // ── Step 6: boundary detection (canonical) ───────────────────────────────
   const edgeCount = new Map();
-  const eKey = (a, b) => a < b ? `${a}|${b}` : `${b}|${a}`;
-  for (let f = 0; f < nF; f++) {
-    const a = canon[getI(f,0)], b = canon[getI(f,1)], c = canon[getI(f,2)];
-    for (const k of [eKey(a,b), eKey(b,c), eKey(c,a)])
-      edgeCount.set(k, (edgeCount.get(k) || 0) + 1);
+  const eKey = (a,b) => a<b ? `${a}|${b}` : `${b}|${a}`;
+  for(let f=0;f<nF;f++){
+    const a=canon[getI(f,0)], b=canon[getI(f,1)], c=canon[getI(f,2)];
+    for(const k of [eKey(a,b),eKey(b,c),eKey(c,a)])
+      edgeCount.set(k,(edgeCount.get(k)||0)+1);
   }
   const boundaryVerts = new Set();
-  for (const [k, cnt] of edgeCount) {
-    if (cnt === 1) { const [a,b] = k.split('|').map(Number); boundaryVerts.add(a); boundaryVerts.add(b); }
+  for(const [k,cnt] of edgeCount){
+    if(cnt===1){ const [a,b]=k.split('|').map(Number); boundaryVerts.add(a); boundaryVerts.add(b); }
   }
-  console.log(`[MIRL curv] nV=${nV}, boundaryVerts=${boundaryVerts.size}, interior=${nV - boundaryVerts.size}`);
+  console.log(`[MIRL curv] nV=${nV}, nCanon=${nC}, boundary=${boundaryVerts.size}`);
 
-  const mean=new Float32Array(nV), gauss=new Float32Array(nV), curv=new Float32Array(nV);
-  for(let i=0;i<nV;i++){
-    const pi=getP(i); const lap=new THREE.Vector3(); let ws=0;
-    for(const j of neighbors[i]){lap.addScaledVector(new THREE.Vector3().subVectors(getP(j),pi),1);ws++;}
-    if(ws>0)lap.divideScalar(ws);
+  // ── Step 7: mean curvature via cotangent Laplace-Beltrami ────────────────
+  // Δ_LB(p_i) = 1/(2·A_i) · Σ_j w_ij·(p_j − p_i)  ≈  2H·n_i
+  // → H_i = |Δ_LB(p_i)| / 2,  sign from dot with vertex normal
+  const mean=new Float32Array(nC), gauss=new Float32Array(nC), curv=new Float32Array(nC);
+  for(let i=0;i<nC;i++){
+    const pi=getPC(i); const lap=new THREE.Vector3();
+    for(const [j,w] of cotW[i])
+      lap.addScaledVector(new THREE.Vector3().subVectors(getPC(j),pi), w);
+    if(vArea[i]>1e-12) lap.divideScalar(2*vArea[i]);
     const sg=lap.dot(vNorm[i])<0?1:-1;
     mean[i]=sg*lap.length()*.5;
   }
-  // If boundary detection captured nearly every vertex (edge fix not yet effective),
-  // fall back to clamping all values rather than zeroing most of the mesh.
-  const useBoundaryExclusion = boundaryVerts.size < nV * 0.9;
-  for(let i=0;i<nV;i++){
+
+  // ── Step 8: Gaussian curvature via angle deficit (canonical) ─────────────
+  function faceAngle(f, vi_c){
+    const a=canon[getI(f,0)], b=canon[getI(f,1)], c=canon[getI(f,2)];
+    let v,u1,u2;
+    if(vi_c===a){v=a;u1=b;u2=c;}
+    else if(vi_c===b){v=b;u1=a;u2=c;}
+    else{v=c;u1=a;u2=b;}
+    const d1=new THREE.Vector3().subVectors(getPC(u1),getPC(v)).normalize();
+    const d2=new THREE.Vector3().subVectors(getPC(u2),getPC(v)).normalize();
+    return Math.acos(Math.max(-1,Math.min(1,d1.dot(d2))));
+  }
+  const useBoundaryExclusion = boundaryVerts.size < nC * 0.9;
+  for(let i=0;i<nC;i++){
     if(useBoundaryExclusion && boundaryVerts.has(i)){ gauss[i]=0; continue; }
-    let aSum=0;for(const fi of vFaces[i])aSum+=faceAngle(fi,i);
+    let aSum=0; for(const fi of vFaces[i]) aSum+=faceAngle(fi,i);
     gauss[i]=vArea[i]>1e-12?(2*Math.PI-aSum)/vArea[i]:0;
   }
-  // Clamp to p2–p98 of finite values to suppress outliers.
-  const validG = [];
-  for(let i=0;i<nV;i++) if(isFinite(gauss[i]) && gauss[i] !== 0) validG.push(gauss[i]);
-  if(validG.length > 1) {
+  // Clamp to p2–p98 to suppress outliers at sharp edges / near-degenerate faces
+  const validG=[];
+  for(let i=0;i<nC;i++) if(isFinite(gauss[i])&&gauss[i]!==0) validG.push(gauss[i]);
+  if(validG.length>1){
     validG.sort((a,b)=>a-b);
-    const lo = validG[Math.floor(validG.length * 0.02)];
-    const hi = validG[Math.floor(validG.length * 0.98)];
-    for(let i=0;i<nV;i++) gauss[i] = Math.max(lo, Math.min(hi, gauss[i]));
+    const lo=validG[Math.floor(validG.length*0.02)];
+    const hi=validG[Math.floor(validG.length*0.98)];
+    for(let i=0;i<nC;i++) gauss[i]=Math.max(lo,Math.min(hi,gauss[i]));
   }
 
-  for(let i=0;i<nV;i++){
-    const H=mean[i],K=gauss[i];
-    const disc=Math.max(H*H-K,0);const root=Math.sqrt(disc);
+  // ── Step 9: curvedness = sqrt((k1²+k2²)/2), k1,k2 = H±sqrt(H²−K) ───────
+  for(let i=0;i<nC;i++){
+    const H=mean[i], K=gauss[i];
+    const disc=Math.max(H*H-K,0); const root=Math.sqrt(disc);
     curv[i]=Math.sqrt(.5*((H+root)**2+(H-root)**2));
   }
-  return {mean, gaussian: gauss, curvedness: curv};
+
+  // ── Step 10: broadcast canonical values back to all (possibly duplicated) vertices ──
+  const mean_out=new Float32Array(nV), gauss_out=new Float32Array(nV), curv_out=new Float32Array(nV);
+  for(let i=0;i<nV;i++){
+    mean_out[i]=mean[canon[i]]; gauss_out[i]=gauss[canon[i]]; curv_out[i]=curv[canon[i]];
+  }
+  return {mean:mean_out, gaussian:gauss_out, curvedness:curv_out};
 }
 
 export function applyColors(geo, mesh, curvMode, cmapName, clipLo, clipHi) {
