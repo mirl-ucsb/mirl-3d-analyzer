@@ -1,6 +1,12 @@
 // ══════════════════════════════════════════
 //  MESH ADJACENCY — cached per-geometry vertex→(neighbor, edge-weight) list
 //  + MinHeap + Dijkstra geodesic for measurement tool
+//
+//  Returns { adj, canon, canonOrig } where:
+//    adj[ci]      — Array of [cj, weight] for canonical vertex ci
+//    canon[i]     — compact canonical index (0..nC-1) for original vertex i
+//    canonOrig[ci]— one original vertex index for canonical vertex ci
+//  Callers that need original-index semantics should map via canon[i].
 // ══════════════════════════════════════════
 
 let _adjCache = null, _adjGeo = null;
@@ -12,28 +18,43 @@ export function getMeshAdj(geo) {
   const nV = pos.count;
   const getI = idx ? (f, v) => idx.getX(f * 3 + v) : (f, v) => f * 3 + v;
   const nF = idx ? idx.count / 3 : nV / 3;
-  const adj = Array.from({ length: nV }, () => []);
+
+  // ── Canonical vertex map ─────────────────────────────────────────────────
+  // Deduplicates positions so non-indexed OBJ geometry (where every face has
+  // 3 unique buffer entries) gets correct multi-face connectivity.
+  const posToCanon = new Map();
+  const canon = new Int32Array(nV);
+  const canonOrig = [];
+  for (let i = 0; i < nV; i++) {
+    const k = `${pos.getX(i)}|${pos.getY(i)}|${pos.getZ(i)}`;
+    if (!posToCanon.has(k)) { posToCanon.set(k, canonOrig.length); canonOrig.push(i); }
+    canon[i] = posToCanon.get(k);
+  }
+  const nC = canonOrig.length;
+
+  // ── Build adjacency on canonical vertices ────────────────────────────────
+  const adj = Array.from({ length: nC }, () => []);
   const seen = new Set();
   for (let f = 0; f < nF; f++) {
-    const a = getI(f, 0), b = getI(f, 1), c = getI(f, 2);
-    const ax = pos.getX(a), ay = pos.getY(a), az = pos.getZ(a);
-    const bx = pos.getX(b), by = pos.getY(b), bz = pos.getZ(b);
-    const cx2 = pos.getX(c), cy2 = pos.getY(c), cz2 = pos.getZ(c);
-    for (const [u, v, ux, uy, uz, vx, vy, vz] of [
-      [a, b, ax, ay, az, bx, by, bz],
-      [b, c, bx, by, bz, cx2, cy2, cz2],
-      [a, c, ax, ay, az, cx2, cy2, cz2],
-    ]) {
-      const key = u < v ? u * nV + v : v * nV + u;
+    const a = canon[getI(f, 0)], b = canon[getI(f, 1)], c = canon[getI(f, 2)];
+    for (const [u, v] of [[a, b], [b, c], [a, c]]) {
+      const key = u < v ? u * nC + v : v * nC + u;
       if (!seen.has(key)) {
         seen.add(key);
-        const w = Math.hypot(ux - vx, uy - vy, uz - vz);
+        const uo = canonOrig[u], vo = canonOrig[v];
+        const w = Math.hypot(
+          pos.getX(uo) - pos.getX(vo),
+          pos.getY(uo) - pos.getY(vo),
+          pos.getZ(uo) - pos.getZ(vo)
+        );
         adj[u].push([v, w]); adj[v].push([u, w]);
       }
     }
   }
-  _adjCache = adj; _adjGeo = geo;
-  return adj;
+
+  _adjCache = { adj, canon, canonOrig };
+  _adjGeo = geo;
+  return _adjCache;
 }
 
 export function resetAdj() {
@@ -71,20 +92,21 @@ export class MinHeap {
 }
 
 export function dijkstraGeodesic(geo, src, dst) {
-  if (src === dst) return 0;
-  const adj = getMeshAdj(geo);
-  const nV = geo.attributes.position.count;
-  const dist = new Float64Array(nV).fill(Infinity);
-  dist[src] = 0;
-  const pq = new MinHeap(); pq.push([0, src]);
+  const { adj, canon } = getMeshAdj(geo);
+  const csrc = canon[src], cdst = canon[dst];
+  if (csrc === cdst) return 0;
+  const nC = adj.length;
+  const dist = new Float64Array(nC).fill(Infinity);
+  dist[csrc] = 0;
+  const pq = new MinHeap(); pq.push([0, csrc]);
   while (pq.size) {
     const [d, u] = pq.pop();
-    if (u === dst) return d;
+    if (u === cdst) return d;
     if (d > dist[u]) continue;
     for (const [v, w] of adj[u]) {
       const nd = d + w;
       if (nd < dist[v]) { dist[v] = nd; pq.push([nd, v]); }
     }
   }
-  return dist[dst];
+  return dist[cdst];
 }

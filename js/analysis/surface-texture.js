@@ -111,28 +111,38 @@ function jacobi3(M) {
   return { vals: [a[0][0], a[1][1], a[2][2]], vecs: [[v[0][0], v[1][0], v[2][0]], [v[0][1], v[1][1], v[2][1]], [v[0][2], v[1][2], v[2][2]]] };
 }
 
-function kRingNeighbors(adj, center, k) {
-  const visited = new Set([center]); let frontier = [center];
+// adjResult is { adj, canon, canonOrig } from getMeshAdj — canonical-indexed.
+function kRingNeighbors(adjResult, centerOrig, k) {
+  const { adj, canon } = adjResult;
+  const cc = canon[centerOrig];
+  const visited = new Set([cc]); let frontier = [cc];
   for (let h = 0; h < k; h++) {
     const next = [];
     for (const u of frontier) for (const [nb] of adj[u]) if (!visited.has(nb)) { visited.add(nb); next.push(nb); }
     frontier = next; if (!frontier.length) break;
   }
-  return [...visited];
+  return [...visited]; // canonical indices
 }
 
-function localHeightDev(geo, adj, vi, k) {
+function localHeightDev(geo, adjResult, vi, k) {
   const pos = geo.attributes.position;
-  const ring = kRingNeighbors(adj, vi, k);
+  const { canonOrig } = adjResult;
+  const ring = kRingNeighbors(adjResult, vi, k); // canonical indices
   if (ring.length < 4) return 0;
+  // Use canonOrig to get one position per canonical vertex
   let cx = 0, cy = 0, cz = 0;
-  for (const i of ring) { cx += pos.getX(i); cy += pos.getY(i); cz += pos.getZ(i); }
+  for (const ci of ring) { const o = canonOrig[ci]; cx += pos.getX(o); cy += pos.getY(o); cz += pos.getZ(o); }
   cx /= ring.length; cy /= ring.length; cz /= ring.length;
   let xx = 0, xy = 0, xz = 0, yy = 0, yz = 0, zz = 0;
-  for (const i of ring) { const dx = pos.getX(i) - cx, dy = pos.getY(i) - cy, dz = pos.getZ(i) - cz; xx += dx * dx; xy += dx * dy; xz += dx * dz; yy += dy * dy; yz += dy * dz; zz += dz * dz; }
+  for (const ci of ring) {
+    const o = canonOrig[ci];
+    const dx = pos.getX(o) - cx, dy = pos.getY(o) - cy, dz = pos.getZ(o) - cz;
+    xx += dx*dx; xy += dx*dy; xz += dx*dz; yy += dy*dy; yz += dy*dz; zz += dz*dz;
+  }
   const eig = jacobi3([[xx, xy, xz], [xy, yy, yz], [xz, yz, zz]]);
   let mi = 0; if (eig.vals[1] < eig.vals[mi]) mi = 1; if (eig.vals[2] < eig.vals[mi]) mi = 2;
   const nx = eig.vecs[0][mi], ny = eig.vecs[1][mi], nz = eig.vecs[2][mi];
+  // Height of vi relative to the fitted plane centroid
   return (pos.getX(vi) - cx) * nx + (pos.getY(vi) - cy) * ny + (pos.getZ(vi) - cz) * nz;
 }
 
@@ -164,9 +174,9 @@ document.getElementById('btn-roughness-compute').addEventListener('click', () =>
   if (!App.geo) { alert('Load a model first.'); return; }
   if (Brush.selected.size < 10) { alert('Paint a region with at least 10 vertices first.'); return; }
   const verts = [...Brush.selected];
-  const adj = getMeshAdj(App.geo);
+  const adjResult = getMeshAdj(App.geo);
   const k = Brush.kRing;
-  const heights = verts.map(vi => localHeightDev(App.geo, adj, vi, k));
+  const heights = verts.map(vi => localHeightDev(App.geo, adjResult, vi, k));
   const n = heights.length;
   const Sa = heights.reduce((s, h) => s + Math.abs(h), 0) / n;
   const Sq = Math.sqrt(heights.reduce((s, h) => s + h * h, 0) / n);
