@@ -1,87 +1,125 @@
+/* MIRL 3D Analyzer · base. No framework, no build.
+
+   Design: a specimen sheet — the conservator's object record. The 3D view is a
+   specimen mounted on a ruled mat; the sidebar controls are the margin
+   apparatus, set in mono; the quality card reads as a colophon/collation note;
+   grades and measurements are stamped marks. Type: Spectral (the voice of the
+   sheet), IBM Plex Mono (the apparatus), Noto Naskh Arabic (Arabic, for later),
+   all vendored locally in fonts/. Paper ground, ink hairlines, square corners.
+   Shared house style with mirl-lacuna and the rest of the MIRL suite. */
+
+@font-face { font-family:"Spectral"; src:url("../fonts/spectral-latin-400-normal.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:"Spectral"; src:url("../fonts/spectral-latin-400-italic.woff2") format("woff2"); font-weight:400; font-style:italic; font-display:swap; }
+@font-face { font-family:"Spectral"; src:url("../fonts/spectral-latin-500-normal.woff2") format("woff2"); font-weight:500; font-style:normal; font-display:swap; }
+@font-face { font-family:"Spectral"; src:url("../fonts/spectral-latin-600-normal.woff2") format("woff2"); font-weight:600; font-style:normal; font-display:swap; }
+@font-face { font-family:"Plex Mono"; src:url("../fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:"Plex Mono"; src:url("../fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); font-weight:500; font-style:normal; font-display:swap; }
+@font-face { font-family:"Naskh"; src:url("../fonts/noto-naskh-arabic-arabic-400-normal.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:"Naskh"; src:url("../fonts/noto-naskh-arabic-arabic-600-normal.woff2") format("woff2"); font-weight:600; font-style:normal; font-display:swap; }
+
 /* ─── Reset ─── */
 * { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-  /* ── UCSB Brand Colors ── */
-  --ucsb-navy:   #003660;
-  --ucsb-navy-dk:#002244;
-  --ucsb-navy-md:#0a4878;
-  --ucsb-gold:   #FEBC11;
-  --ucsb-gold-dk:#e5a800;
-  --ucsb-sea:    #09847A;
-  --ucsb-aqua:   #047C91;
-  --ucsb-coral:  #C43424;
+  /* ── Type ── */
+  --serif:  "Spectral", "Naskh", Georgia, "Times New Roman", serif;
+  --mono:   "Plex Mono", "SF Mono", Menlo, Consolas, monospace;
+  --arabic: "Naskh", "Geeza Pro", "Spectral", serif;
 
-  /* ── Surface / Neutral ── */
-  --bg:          #F1EEEA;
-  --bg2:         #EDEADF;
-  --panel:       #ffffff;
-  --border:      #DCD6CC;
-  --border-dk:   #C9BF9D;
-  --text:        #1a1a18;
-  --text2:       #5c5a54;
-  --text3:       #9a9890;
+  /* ── Paper & ink (the house palette) ── */
+  --bg:       #f4efe1;   /* sheet paper */
+  --surface:  #fcf9ef;   /* a lighter leaf, for pinned notes & menus */
+  --mat:      #e9e3d0;   /* the mount behind the specimen / viewport */
+  --ink:      #211d12;
+  --ink-2:    #5e5747;
+  --ink-3:    #92896e;
+  --line:     #ddd4bd;   /* hairline rule */
+  --line-2:   #bfb494;   /* stronger rule */
+  --soft:     #ece5d2;   /* hover wash */
+  --stamp:    #8a2a17;   /* oxide stamp red: active states, marks */
+  --blue:     #2d4f6e;   /* checking-pencil blue */
+  --radius:   0;
 
-  /* ── Semantic aliases ── */
-  --accent:      #003660;
-  --accent2:     #0a4878;
-  --accent-bg:   #e6edf4;
-  --green:       #09847A;
-  --yellow:      #c49a00;
-  --red:         #C43424;
-  --r:8px;
+  /* ── Aliases: legacy token names still used by components/tabs CSS and by
+     inline style="" attributes in index.html. Mapped onto the house palette so
+     nothing has to be hand-edited across the markup. ── */
+  --panel:    var(--bg);
+  --bg2:      var(--soft);
+  --border:   var(--line);
+  --border-dk:var(--line-2);
+  --text:     var(--ink);
+  --text2:    var(--ink-2);
+  --text3:    var(--ink-3);
+  --accent:   var(--stamp);
+  --accent2:  var(--stamp);
+  --accent-bg:var(--soft);
+  --green:    var(--blue);
+  --yellow:   #8a6a00;
+  --red:      var(--stamp);
+  --r:0;
   --tab-h:44px;
 }
 
 body {
-  font-family:'Source Sans 3','Segoe UI',-apple-system,sans-serif;
-  background:var(--bg); color:var(--text);
+  font-family:var(--serif);
+  background:var(--bg); color:var(--ink);
   height:100vh; overflow:hidden;
   display:flex; flex-direction:column;
-  font-size:14px;
+  font-size:17px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
 
-/* ─── Header ─── */
+/* mono apparatus label used throughout the margins */
+.label { font-family:var(--mono); color:var(--ink-3); font-size:12.5px; text-transform:uppercase; letter-spacing:.14em; }
+
+[dir="rtl"], .rtl { font-family:var(--arabic); line-height:1.85; }
+
+/* ─── Header: the specimen-sheet plate ─── */
 header {
-  background:var(--ucsb-navy);
-  border-bottom:3px solid var(--ucsb-gold);
-  padding:0 20px;
-  display:flex; align-items:stretch; justify-content:space-between;
-  flex-shrink:0; min-height:56px;
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+  box-shadow:inset 0 -4px 0 -3px var(--line-2);   /* a faint second rule */
+  padding:0 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; min-height:62px;
 }
-.logo { display:flex; align-items:center; gap:12px; padding:10px 0; }
+.logo { display:flex; align-items:baseline; gap:14px; }
+/* the "M" chip becomes a small ruled colophon mark */
 .logo-icon {
-  width:36px; height:36px;
-  background:var(--ucsb-gold); border-radius:4px;
+  align-self:center;
+  width:34px; height:34px;
+  border:1px solid var(--ink); background:transparent;
   display:flex; align-items:center; justify-content:center;
-  color:var(--ucsb-navy); font-weight:800; font-size:14px; letter-spacing:-.5px;
+  color:var(--ink); font-family:var(--serif); font-weight:600; font-size:18px;
 }
-.logo h1 { font-size:15px; font-weight:600; color:#ffffff; line-height:1.15; letter-spacing:.01em; }
-.logo span { font-size:11px; color:rgba(255,255,255,.6); letter-spacing:.02em; }
-.header-right { display:flex; gap:8px; align-items:center; }
-#backend-badge { font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,.25); color:rgba(255,255,255,.55); display:none; }
-#backend-badge.connected { color:#5de8a0; border-color:#5de8a0; background:rgba(93,232,160,.1); display:flex; align-items:center; gap:5px; }
-#backend-badge.disconnected { color:rgba(255,255,255,.45); border-color:rgba(255,255,255,.2); display:flex; align-items:center; gap:5px; }
-#backend-badge::before { content:'●'; font-size:8px; }
-header .btn { color:rgba(255,255,255,.85); border-color:rgba(255,255,255,.25); background:transparent; }
-header .btn:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.4); color:#fff; }
-header .btn-primary { background:var(--ucsb-gold); border-color:var(--ucsb-gold); color:var(--ucsb-navy); font-weight:600; }
-header .btn-primary:hover { background:var(--ucsb-gold-dk); border-color:var(--ucsb-gold-dk); }
+.logo h1 { font-family:var(--serif); font-size:21px; font-weight:600; color:var(--ink); line-height:1.1; letter-spacing:.01em; }
+.logo span { display:block; margin-top:3px; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.13em; color:var(--ink-3); }
+.header-right { display:flex; gap:14px; align-items:center; }
 
-/* ─── Tabs ─── */
+/* backend badge as a small stamped mark */
+#backend-badge { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; padding:4px 9px; border:1px solid var(--line-2); color:var(--ink-3); display:none; }
+#backend-badge.connected { color:var(--blue); border-color:var(--blue); display:flex; align-items:center; gap:6px; }
+#backend-badge.disconnected { color:var(--ink-3); border-color:var(--line-2); display:flex; align-items:center; gap:6px; }
+#backend-badge::before { content:'●'; font-size:7px; }
+header .btn { color:var(--ink); border-color:var(--ink); background:transparent; }
+header .btn:hover { background:var(--ink); border-color:var(--ink); color:var(--bg); }
+header .btn-primary { background:var(--ink); border-color:var(--ink); color:var(--bg); }
+header .btn-primary:hover { background:var(--stamp); border-color:var(--stamp); color:var(--bg); }
+
+/* ─── Tabs: the folio line ─── */
 .tabs {
-  background:var(--ucsb-navy-dk);
-  border-bottom:1px solid rgba(255,255,255,.08);
-  display:flex; align-items:flex-end; padding:0 20px; gap:0; flex-shrink:0;
+  background:var(--bg);
+  border-bottom:3px double var(--line-2);
+  display:flex; align-items:flex-end; padding:0 28px; gap:30px; flex-shrink:0;
 }
 .tab {
-  padding:11px 18px; font-size:12.5px; cursor:pointer;
-  border-bottom:3px solid transparent;
-  color:rgba(255,255,255,.55); transition:all .15s; user-select:none;
-  letter-spacing:.015em;
+  padding:14px 1px; font-family:var(--mono); font-size:13px;
+  text-transform:uppercase; letter-spacing:.12em; cursor:pointer;
+  color:var(--ink-2); user-select:none;
+  border-bottom:2px solid transparent; margin-bottom:-2px;
 }
-.tab:hover { color:rgba(255,255,255,.85); background:rgba(255,255,255,.05); }
-.tab.active { color:#fff; border-bottom-color:var(--ucsb-gold); font-weight:600; }
+.tab:hover { color:var(--ink); }
+.tab.active { color:var(--ink); border-bottom-color:var(--stamp); }
 
 /* ─── Main ─── */
 .main { flex:1; display:flex; overflow:hidden; position:relative; }
@@ -90,16 +128,21 @@ header .btn-primary:hover { background:var(--ucsb-gold-dk); border-color:var(--u
 .tab-panel { display:none; flex:1; overflow:hidden; }
 .tab-panel.active { display:flex; }
 
-/* ─── Sidebar ─── */
-.sidebar { width:285px; background:var(--panel); border-right:1px solid var(--border); overflow-y:auto; flex-shrink:0; }
-.sidebar-section { border-bottom:1px solid var(--border); }
-.ss-header { padding:9px 14px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--ucsb-navy); background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; border-left:3px solid transparent; }
-.ss-header:hover { background:var(--bg2); border-left-color:var(--ucsb-gold); }
-.ss-arrow { transition:transform .2s; font-size:9px; color:var(--text3); }
+/* ─── Sidebar: the margin apparatus ─── */
+.sidebar { width:300px; background:var(--bg); border-right:1px solid var(--line); overflow-y:auto; flex-shrink:0; }
+.sidebar-section { border-bottom:1px solid var(--line); }
+.ss-header {
+  padding:11px 18px; font-family:var(--mono); font-size:12.5px;
+  text-transform:uppercase; letter-spacing:.12em; color:var(--ink-2);
+  background:var(--bg); cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between; user-select:none;
+}
+.ss-header:hover { color:var(--stamp); }
+.ss-arrow { transition:transform .2s; font-size:10px; color:var(--ink-3); }
 .ss-header.collapsed .ss-arrow { transform:rotate(-90deg); }
 .ss-header.collapsed + .ss-body { display:none; }
-.ss-body { padding:10px 14px 14px; background:var(--panel); }
+.ss-body { padding:6px 18px 16px; background:var(--bg); }
 
 /* ─── Scrollbar ─── */
-.sidebar::-webkit-scrollbar, #code-output::-webkit-scrollbar { width:5px; }
-.sidebar::-webkit-scrollbar-thumb, #code-output::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+.sidebar::-webkit-scrollbar, #code-output::-webkit-scrollbar { width:6px; }
+.sidebar::-webkit-scrollbar-thumb, #code-output::-webkit-scrollbar-thumb { background:var(--line-2); }
