@@ -152,7 +152,7 @@ sits alongside the lab's other tools.
 ## Credits
 
 - **Veronica Bodenstein**, researcher and developer
-- **Jeff O'Brien**, faculty advisor
+- **Jeff O'Brien**, curator, MIRL
 - [Material / Image Research Lab](https://mirl.arthistory.ucsb.edu), Department of
   History of Art and Architecture, UC Santa Barbara
 
