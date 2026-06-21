@@ -123,9 +123,6 @@ tool from a file opened by double-clicking. If you try, the page itself explains
 this and tells you what to do. Once the page has loaded you can work offline, and
 nothing you open ever leaves your computer.
 
-Prefer something you can email or open without a terminal? A single self-contained
-version lives at `dist/mirl-3d-analyzer-bundled.html`.
-
 ## Optional: higher-accuracy curvature
 
 The Analyzer computes everything in the browser. For research that needs the most

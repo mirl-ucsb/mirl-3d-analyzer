@@ -76,15 +76,3 @@ Then add a matching entry to the sidebar list in `index.html`:
   <small>Short description</small>
 </div>
 ```
-
-## Re-running extraction
-
-The repository can be regenerated at any time from the original
-`mirl-3d-analyzer-v2.html` prototype:
-
-```bash
-python3 extract_repo.py
-```
-
-This wipes and recreates the `mirl-3d-analyzer/` directory. If you've
-made changes inside the generated tree, commit or copy them out first.
