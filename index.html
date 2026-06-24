@@ -141,6 +141,27 @@
       </div>
 
       <div class="sidebar-section">
+        <div class="ss-header collapsed" onclick="toggleSS(this)">Views &amp; Capture <span class="ss-arrow">▾</span></div>
+        <div class="ss-body">
+          <div class="cg">
+            <label class="cl">Preset view</label>
+            <div class="tg" id="view-presets">
+              <button class="tb" data-view="front">Front</button>
+              <button class="tb" data-view="back">Back</button>
+              <button class="tb" data-view="left">Left</button>
+              <button class="tb" data-view="right">Right</button>
+              <button class="tb" data-view="top">Top</button>
+              <button class="tb" data-view="bottom">Bottom</button>
+            </div>
+          </div>
+          <div class="cg">
+            <button class="btn btn-sm btn-block" id="btn-turntable">Turntable (WebM)</button>
+            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Records one full rotation as a video for talks. Opens in any browser; Chrome captures best.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
         <div class="ss-header collapsed" onclick="toggleSS(this)">Lighting <span class="ss-arrow">▾</span></div>
         <div class="ss-body">
           <div class="cg">

@@ -27,6 +27,7 @@ import './viewer/view-modes.js';
 import './viewer/loader.js';
 import './viewer/gizmo.js';
 import './viewer/raking.js';
+import './viewer/views.js';
 
 import './analysis/measurement.js';
 import './analysis/metrics.js';
