@@ -8,7 +8,9 @@ import { sceneL, sceneR, cameraL, cameraR, controlsL, controlsR } from '../core/
 import { showLoad, hideLoad } from '../core/loading.js';
 import { loadOBJ } from '../viewer/loader.js';
 import { computeCurvature } from '../analysis/curvature.js';
-import { getCmap } from '../analysis/color-maps.js';
+import { getCmap, legendGradient } from '../analysis/color-maps.js';
+import { Scale } from '../analysis/measurement.js';
+import { buildGrid, computeDeviation, icpAlign } from '../analysis/deviation.js';
 
 export function applyCompareColors(geo, mesh, curvData, analysisKey, cmapName, sceneRef) {
   if(analysisKey==='none'||!curvData[analysisKey]){
@@ -67,3 +69,71 @@ document.getElementById('cmp-right-cmap').addEventListener('change',e=>{
   if(App.cmpMeshR)applyCompareColors(App.cmpGeoR,App.cmpMeshR,App.cmpCurvR,App.cmpAnalysisR,App.cmpCmapR,sceneR);
 });
 document.getElementById('chk-sync-cam').addEventListener('change',e=>{App.syncCam=e.target.checked;});
+
+// ── Deviation map (right = test, left = reference) ──
+const fmtLen = u => Scale.mmPerUnit ? `${(u * Scale.mmPerUnit).toFixed(2)} ${Scale.unit}` : `${u.toFixed(4)} units`;
+
+function applyDeviationColors(geo, mesh, dev, absMax) {
+  const cmap = getCmap('coolwarm'), nV = dev.length, cols = new Float32Array(nV * 3);
+  const scale = absMax || 1;
+  for (let i = 0; i < nV; i++) {
+    if (!isFinite(dev[i])) { cols[i * 3] = 0.80; cols[i * 3 + 1] = 0.80; cols[i * 3 + 2] = 0.76; continue; }
+    const t = 0.5 + 0.5 * Math.max(-1, Math.min(1, dev[i] / scale));   // diverging, centred at zero
+    const [r, g, b] = cmap(t);
+    cols[i * 3] = r; cols[i * 3 + 1] = g; cols[i * 3 + 2] = b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  mesh.material.vertexColors = true; mesh.material.color.set(0xffffff); mesh.material.needsUpdate = true;
+}
+
+// Robust symmetric range: the 98th percentile of |deviation|, so a few outliers
+// do not flatten the colour scale.
+function robustAbsMax(dev) {
+  const a = [];
+  for (let i = 0; i < dev.length; i++) if (isFinite(dev[i])) a.push(Math.abs(dev[i]));
+  if (!a.length) return 1;
+  a.sort((x, y) => x - y);
+  return a[Math.floor(a.length * 0.98)] || a[a.length - 1] || 1;
+}
+
+function refGrid() {
+  App.cmpMeshL.updateMatrixWorld(true);
+  return buildGrid(App.cmpGeoL, App.cmpMeshL.matrixWorld);
+}
+
+function bothLoaded() {
+  if (App.cmpMeshL && App.cmpMeshR) return true;
+  alert('Load a left (reference) and a right (test) model first.');
+  return false;
+}
+
+document.getElementById('btn-cmp-align').addEventListener('click', () => {
+  if (!bothLoaded()) return;
+  showLoad('Aligning (ICP)…');
+  setTimeout(() => {
+    App.cmpMeshR.updateMatrixWorld(true);
+    const { transform, rms } = icpAlign(App.cmpGeoR, App.cmpMeshR.matrixWorld, refGrid());
+    App.cmpMeshR.applyMatrix4(transform);
+    App.cmpMeshR.updateMatrixWorld(true);
+    document.getElementById('cmp-dev-status').textContent = `Aligned: residual RMS ${fmtLen(rms)}`;
+    hideLoad();
+  }, 30);
+});
+
+document.getElementById('btn-cmp-deviation').addEventListener('click', () => {
+  if (!bothLoaded()) return;
+  showLoad('Computing deviation…');
+  setTimeout(() => {
+    App.cmpMeshR.updateMatrixWorld(true);
+    const { dev, rms } = computeDeviation(App.cmpGeoR, App.cmpMeshR.matrixWorld, refGrid());
+    const absMax = robustAbsMax(dev);
+    applyDeviationColors(App.cmpGeoR, App.cmpMeshR, dev, absMax);
+    document.getElementById('cmp-dev-bar').style.background = legendGradient('coolwarm');
+    document.getElementById('cmp-dev-lo').textContent = '-' + fmtLen(absMax);
+    document.getElementById('cmp-dev-hi').textContent = '+' + fmtLen(absMax);
+    document.getElementById('cmp-dev-rms').textContent = `RMS deviation: ${fmtLen(rms)}`;
+    document.getElementById('cmp-dev-legend').style.display = '';
+    document.getElementById('cmp-dev-status').textContent = '';
+    hideLoad();
+  }, 30);
+});

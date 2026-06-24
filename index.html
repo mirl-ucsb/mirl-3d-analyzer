@@ -465,6 +465,20 @@
         <div class="ss-header" onclick="toggleSS(this)">Camera <span class="ss-arrow">▾</span></div>
         <div class="ss-body"><div class="cg"><label class="chk"><input type="checkbox" id="chk-sync-cam" checked> Sync Cameras</label></div></div>
       </div>
+      <div class="sidebar-section">
+        <div class="ss-header" onclick="toggleSS(this)">Deviation Map <span class="ss-arrow">▾</span></div>
+        <div class="ss-body">
+          <div class="cg" style="font-size:10.5px;color:var(--text2);line-height:1.4">Signed distance from the right (test) scan to the left (reference) scan, drawn on the right. Red is outward gain, blue is inward loss. Align first if the two scans are not already registered.</div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-cmp-align">Align test to reference (ICP)</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-cmp-deviation">Compute Deviation Map</button></div>
+          <div id="cmp-dev-status" style="font-size:10.5px;color:var(--green);line-height:1.4"></div>
+          <div id="cmp-dev-legend" style="display:none;margin-top:6px">
+            <div id="cmp-dev-bar" style="height:12px;border:1px solid var(--border)"></div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--text2);margin-top:3px"><span id="cmp-dev-lo">-</span><span>0</span><span id="cmp-dev-hi">+</span></div>
+            <div style="font-family:var(--mono);font-size:11px;margin-top:6px" id="cmp-dev-rms">RMS deviation: —</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="viewport" id="cmp-vp-left" style="position:relative;"><div class="compare-label">Left</div></div>
     <div id="compare-divider"></div>
