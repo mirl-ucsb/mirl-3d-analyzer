@@ -194,13 +194,15 @@
         <div class="ss-header" onclick="toggleSS(this)">Surface Analysis <span class="ss-arrow">▾</span></div>
         <div class="ss-body">
           <div class="cg">
-            <label class="cl">Curvature Map</label>
+            <label class="cl">Surface Map</label>
             <div class="tg" id="curv-mode">
               <button class="tb active" data-curv="none">None</button>
               <button class="tb" data-curv="mean">Mean</button>
               <button class="tb" data-curv="gaussian">Gaussian</button>
               <button class="tb" data-curv="curvedness">Curvedness</button>
+              <button class="tb" data-curv="thickness">Thickness</button>
             </div>
+            <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">Thickness maps the wall depth from each point to the opposite surface. Set a physical scale for real units. Open areas read neutral.</div>
           </div>
           <div class="cg">
             <label class="cl">Color Map</label>
@@ -640,8 +642,8 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
   }
 }
 </script>
