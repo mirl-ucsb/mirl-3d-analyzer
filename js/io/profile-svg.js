@@ -111,6 +111,29 @@ function chainSegments(segs, eps) {
   return chains;
 }
 
+// The exterior elevation: the outer radius (max distance from the centre axis)
+// of the section contour in each height band, which for a body of revolution is
+// the silhouette, the generatrix of the form. Each cut segment is rasterised
+// across the bands it spans, so a tall wall segment fills every band between its
+// ends rather than only sampling sparse vertices.
+function elevationEnvelope(segs, wmin, wmax) {
+  const N = 240, dw = (wmax - wmin) / N || 1;
+  const R = new Float32Array(N);
+  for (const [p0, p1] of segs) {
+    const lo = Math.max(0, Math.floor((Math.min(p0.w, p1.w) - wmin) / dw));
+    const hi = Math.min(N - 1, Math.floor((Math.max(p0.w, p1.w) - wmin) / dw));
+    for (let b = lo; b <= hi; b++) {
+      const w = wmin + (b + 0.5) * dw;
+      const t = p1.w === p0.w ? 0 : Math.max(0, Math.min(1, (w - p0.w) / (p1.w - p0.w)));
+      const u = Math.abs(p0.u + (p1.u - p0.u) * t);
+      if (u > R[b]) R[b] = u;
+    }
+  }
+  const pts = [];
+  for (let b = N - 1; b >= 0; b--) if (R[b] > 0) pts.push({ u: R[b], w: wmin + (b + 0.5) * dw });
+  return pts;
+}
+
 // A round 1 / 2 / 5 × 10^n length at or below the target.
 function niceLength(x) {
   const p = Math.pow(10, Math.floor(Math.log10(x)));
@@ -138,17 +161,28 @@ function buildSVG(chains, bounds, meta) {
   parts.push(`<rect x="4" y="4" width="${W - 8}" height="${H - 8}" fill="none" stroke="${RULE}" stroke-width="1"/>`);
 
   // Title
-  parts.push(`<text x="${M}" y="${M - 6}" fill="${INK}" font-size="13" letter-spacing="2.5">CROSS-SECTION PROFILE</text>`);
+  parts.push(`<text x="${M}" y="${M - 6}" fill="${INK}" font-size="13" letter-spacing="2.5">${esc(meta.title)}</text>`);
 
-  // Centre axis (rotational axis of a centred vessel), if the cut spans u = 0
-  if (umin <= 0 && umax >= 0) {
-    const ax = X(0);
-    parts.push(`<line x1="${ax.toFixed(2)}" y1="${oy}" x2="${ax.toFixed(2)}" y2="${(oy + drawH).toFixed(2)}" stroke="${STAMP}" stroke-width="0.8" stroke-dasharray="7 3 1.5 3" opacity="0.7"/>`);
+  const axisX = X(0), spansAxis = umin <= 0 && umax >= 0;
+  const sectionFill = closedD ? `<path d="${closedD}" fill="${INK}" fill-rule="evenodd" fill-opacity="0.92"/>` : '';
+  const sectionStroke = `<path d="${d}" fill="none" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+  if (meta.style === 'half' && meta.elevation && meta.elevation.length && spansAxis) {
+    // Half-section on the left of the axis, exterior elevation on the right.
+    parts.push(`<defs><clipPath id="secL"><rect x="0" y="0" width="${axisX.toFixed(2)}" height="${H}"/></clipPath></defs>`);
+    parts.push(`<g clip-path="url(#secL)">${sectionFill}${sectionStroke}</g>`);
+    const elevD = 'M' + meta.elevation.map(p => `${X(p.u).toFixed(2)} ${Y(p.w).toFixed(2)}`).join(' L ');
+    parts.push(`<path d="${elevD}" fill="none" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/>`);
+  } else {
+    // The section: solid fill (even-odd carves the bore from the wall) plus a crisp outline
+    parts.push(sectionFill);
+    parts.push(sectionStroke);
   }
 
-  // The section: solid fill (even-odd carves the bore from the wall) plus a crisp outline
-  if (closedD) parts.push(`<path d="${closedD}" fill="${INK}" fill-rule="evenodd" fill-opacity="0.92"/>`);
-  parts.push(`<path d="${d}" fill="none" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/>`);
+  // Centre axis (rotational axis of a centred vessel), drawn on top if the cut spans u = 0
+  if (spansAxis) {
+    parts.push(`<line x1="${axisX.toFixed(2)}" y1="${oy}" x2="${axisX.toFixed(2)}" y2="${(oy + drawH).toFixed(2)}" stroke="${STAMP}" stroke-width="0.8" stroke-dasharray="7 3 1.5 3" opacity="0.7"/>`);
+  }
 
   // Scale bar or a note, on the footer band
   const fy = oy + drawH + 34;
@@ -194,10 +228,14 @@ export function exportProfileSVG() {
     if (p.w < wmin) wmin = p.w; if (p.w > wmax) wmax = p.w;
   }));
 
+  const style = document.querySelector('#profile-style .tb.active')?.dataset.pstyle || 'full';
+  const elevation = style === 'half' ? elevationEnvelope(segs, wmin, wmax) : null;
+
   const anyClosed = chains.some(c => c.closed);
   const meta = {
     name: App.fileName || 'model',
-    axis,
+    axis, style, elevation,
+    title: style === 'half' ? 'PROFILE: SECTION + ELEVATION' : 'CROSS-SECTION PROFILE',
     unit: Scale.unit,
     unitPerMesh: Scale.mmPerUnit || 0,   // physical units per mesh unit (0 = unset)
     openNote: anyClosed ? '' : ' · open section'
@@ -206,8 +244,14 @@ export function exportProfileSVG() {
   const svg = buildSVG(chains, { umin, umax, wmin, wmax }, meta);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
-  a.download = `MIRL_${(App.fileName || 'model').replace(/\.(obj|stl|ply)$/i, '')}_profile_${axis}.svg`;
+  const tag = style === 'half' ? 'section-elevation' : 'profile';
+  a.download = `MIRL_${(App.fileName || 'model').replace(/\.(obj|stl|ply)$/i, '')}_${tag}_${axis}.svg`;
   a.click();
 }
 
 document.getElementById('btn-export-profile').addEventListener('click', exportProfileSVG);
+document.getElementById('profile-style').addEventListener('click', e => {
+  const b = e.target.closest('.tb'); if (!b) return;
+  document.querySelectorAll('#profile-style .tb').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+});
