@@ -42,8 +42,8 @@ export const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 export const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
 dirLight.position.set(2, 3, 3); scene.add(dirLight);
-const dir2 = new THREE.DirectionalLight(0xffffff, 0.25);
-dir2.position.set(-2, -1, -2); scene.add(dir2);
+export const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
+fillLight.position.set(-2, -1, -2); scene.add(fillLight);
 
 export const axesHelper = new THREE.AxesHelper(1.2);
 axesHelper.visible = false;

@@ -9,6 +9,7 @@ import { scene, sceneAnn, axesHelper, renderer, camera, controls, ambientLight, 
 import { applyCurvatureColors } from '../analysis/curvature.js';
 import { updateViewMode, updateClipping, clearOverlays } from '../viewer/view-modes.js';
 import { detachGizmo } from '../viewer/gizmo.js';
+import { resetRaking } from '../viewer/raking.js';
 import { renderAnnotationList, exportAnnotations } from '../features/annotations.js';
 import { rendererAnn } from '../core/scenes.js';
 import { Measure } from '../analysis/measurement.js';
@@ -90,6 +91,7 @@ document.getElementById('btn-ann-export-csv').addEventListener('click', () => ex
 // ── New File — full reset ──
 document.getElementById('btn-new').addEventListener('click', () => {
   detachGizmo();
+  resetRaking();
   if (App.mesh) scene.remove(App.mesh);
   clearOverlays();
   if (App.meshAnn) sceneAnn.remove(App.meshAnn);

@@ -14,6 +14,7 @@ import { computeCurvature, applyCurvatureColors } from '../analysis/curvature.js
 import { computeQuality, updateQualityCard } from '../analysis/quality.js';
 import { updateViewMode, updateClipping, clearOverlays } from './view-modes.js';
 import { detachGizmo } from './gizmo.js';
+import { resetRaking } from './raking.js';
 import { showSaveDbSection } from '../features/database.js';
 import { resetRS } from '../analysis/radiance-scaling.js';
 import { updateScriptContext } from '../features/scripts.js';
@@ -107,6 +108,7 @@ export function loadMainModel(files) {
   loader(files, (geo, name) => {
     // Remove old
     detachGizmo();
+    resetRaking();
     if(App.mesh)scene.remove(App.mesh);
     clearOverlays();
     if(App.meshAnn)sceneAnn.remove(App.meshAnn);

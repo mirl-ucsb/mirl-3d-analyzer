@@ -26,6 +26,7 @@ import './analysis/adjacency.js';
 import './viewer/view-modes.js';
 import './viewer/loader.js';
 import './viewer/gizmo.js';
+import './viewer/raking.js';
 
 import './analysis/measurement.js';
 import './analysis/surface-texture.js';
