@@ -13,6 +13,7 @@ import { showLoad, hideLoad } from '../core/loading.js';
 import { computeCurvature, applyCurvatureColors } from '../analysis/curvature.js';
 import { computeQuality, updateQualityCard } from '../analysis/quality.js';
 import { updateViewMode, updateClipping, clearOverlays } from './view-modes.js';
+import { detachGizmo } from './gizmo.js';
 import { showSaveDbSection } from '../features/database.js';
 import { resetRS } from '../analysis/radiance-scaling.js';
 import { updateScriptContext } from '../features/scripts.js';
@@ -105,6 +106,7 @@ export function loadMainModel(files) {
   const loader   = isSTLPLY ? loadSTLPLY : loadOBJ;
   loader(files, (geo, name) => {
     // Remove old
+    detachGizmo();
     if(App.mesh)scene.remove(App.mesh);
     clearOverlays();
     if(App.meshAnn)sceneAnn.remove(App.meshAnn);

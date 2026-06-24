@@ -26,11 +26,17 @@ vpEl.appendChild(labelRenderer.domElement);
 export const scene = new THREE.Scene();
 scene.background = new THREE.Color(App.bgColor);
 
-export const camera = new THREE.PerspectiveCamera(45, 1, 0.0001, 1000);
+export const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 100);
 camera.position.set(0, 0, 3);
 export const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
+// Keep navigation forgiving: never zoom past the model into emptiness or
+// inside it, dolly toward the cursor, and pan in screen space.
+controls.minDistance = 0.3;
+controls.maxDistance = 25;
+controls.zoomToCursor = true;
+controls.screenSpacePanning = true;
 
 export const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
@@ -65,11 +71,15 @@ sceneAnn.add(new THREE.AmbientLight(0xffffff, 0.6));
 const dirAnn = new THREE.DirectionalLight(0xffffff, 0.8);
 dirAnn.position.set(2, 3, 3); sceneAnn.add(dirAnn);
 
-export const cameraAnn = new THREE.PerspectiveCamera(45, 1, 0.0001, 1000);
+export const cameraAnn = new THREE.PerspectiveCamera(45, 1, 0.01, 100);
 cameraAnn.position.set(0, 0, 3);
 export const controlsAnn = new OrbitControls(cameraAnn, rendererAnn.domElement);
 controlsAnn.enableDamping = true;
 controlsAnn.dampingFactor = 0.08;
+controlsAnn.minDistance = 0.3;
+controlsAnn.maxDistance = 25;
+controlsAnn.zoomToCursor = true;
+controlsAnn.screenSpacePanning = true;
 
 // ──── Compare viewports ────
 export const cmpVpL = document.getElementById('cmp-vp-left');
@@ -89,13 +99,18 @@ export const sceneR = new THREE.Scene(); sceneR.background = new THREE.Color('#d
   d.position.set(2, 3, 3); s.add(d);
 });
 
-export const cameraL = new THREE.PerspectiveCamera(45, 1, 0.0001, 1000);
-export const cameraR = new THREE.PerspectiveCamera(45, 1, 0.0001, 1000);
+export const cameraL = new THREE.PerspectiveCamera(45, 1, 0.01, 100);
+export const cameraR = new THREE.PerspectiveCamera(45, 1, 0.01, 100);
 cameraL.position.set(0, 0, 3);
 cameraR.position.set(0, 0, 3);
 export const controlsL = new OrbitControls(cameraL, rendererL.domElement);
 export const controlsR = new OrbitControls(cameraR, rendererR.domElement);
-[controlsL, controlsR].forEach(c => { c.enableDamping = true; c.dampingFactor = 0.08; });
+// No zoomToCursor here: the two viewports stay locked by copying position and
+// target, and cursor-anchored dolly would pull them out of sync.
+[controlsL, controlsR].forEach(c => {
+  c.enableDamping = true; c.dampingFactor = 0.08;
+  c.minDistance = 0.3; c.maxDistance = 25; c.screenSpacePanning = true;
+});
 
 function syncCameras(src, dst, dstCtrl) {
   dst.position.copy(src.position);

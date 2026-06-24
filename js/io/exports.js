@@ -7,13 +7,17 @@
 import { App } from '../core/state.js';
 import { renderer, scene, camera } from '../core/scenes.js';
 import { Measure, Scale } from '../analysis/measurement.js';
+import { setGizmoVisibleForCapture } from '../viewer/gizmo.js';
 import { exportAnnotations } from '../features/annotations.js';
 
 // ── Screenshot ──
 function doScreenshot() {
+  setGizmoVisibleForCapture(false);
   renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  setGizmoVisibleForCapture(true);
   const a = document.createElement('a');
-  a.href = renderer.domElement.toDataURL('image/png');
+  a.href = url;
   a.download = `MIRL_${App.fileName.replace('.obj', '')}_${App.curvMode}.png`;
   a.click();
 }

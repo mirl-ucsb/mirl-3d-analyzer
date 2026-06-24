@@ -16,6 +16,19 @@ export function clearOverlays() {
   if (ptsOverlay)  { scene.remove(ptsOverlay);  ptsOverlay  = null; }
 }
 
+// Lock the wire/points overlays onto the model's current placement, so the
+// orient/move gizmo turns or shifts every render style together, not just the
+// solid mesh. Called after a fresh overlay is built and on each gizmo change.
+export function syncOverlayTransform() {
+  if (!App.mesh) return;
+  [wireOverlay, ptsOverlay].forEach(o => {
+    if (!o) return;
+    o.position.copy(App.mesh.position);
+    o.quaternion.copy(App.mesh.quaternion);
+    o.scale.copy(App.mesh.scale);
+  });
+}
+
 export function updateViewMode() {
   if (!App.mesh) return;
   clearOverlays();
@@ -40,6 +53,7 @@ export function updateViewMode() {
     );
     scene.add(wireOverlay);
   }
+  syncOverlayTransform();
 }
 
 export function updateClipping() {

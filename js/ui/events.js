@@ -5,9 +5,10 @@
 
 import * as THREE from 'three';
 import { App } from '../core/state.js';
-import { scene, sceneAnn, axesHelper, renderer, camera, ambientLight, dirLight } from '../core/scenes.js';
+import { scene, sceneAnn, axesHelper, renderer, camera, controls, ambientLight, dirLight } from '../core/scenes.js';
 import { applyCurvatureColors } from '../analysis/curvature.js';
 import { updateViewMode, updateClipping, clearOverlays } from '../viewer/view-modes.js';
+import { detachGizmo } from '../viewer/gizmo.js';
 import { renderAnnotationList, exportAnnotations } from '../features/annotations.js';
 import { rendererAnn } from '../core/scenes.js';
 import { Measure } from '../analysis/measurement.js';
@@ -32,6 +33,9 @@ document.getElementById('bg-mode').addEventListener('click', e => {
 
 // ── Axes ──
 document.getElementById('chk-axes').addEventListener('change', e => { axesHelper.visible = e.target.checked; });
+
+// ── Reset View — recover framing if the camera gets lost ──
+document.getElementById('btn-view-reset').addEventListener('click', () => { controls.reset(); });
 
 // ── Lighting ──
 document.getElementById('lgt-ambient').addEventListener('input', e => {
@@ -85,6 +89,7 @@ document.getElementById('btn-ann-export-csv').addEventListener('click', () => ex
 
 // ── New File — full reset ──
 document.getElementById('btn-new').addEventListener('click', () => {
+  detachGizmo();
   if (App.mesh) scene.remove(App.mesh);
   clearOverlays();
   if (App.meshAnn) sceneAnn.remove(App.meshAnn);
