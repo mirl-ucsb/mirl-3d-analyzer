@@ -223,7 +223,7 @@ export function dbRender(filterText = '') {
         ${sourceTag(r._source)}
         ${r.hasFile
           ? `<button class="btn btn-sm btn-primary" style="font-size:11px;padding:4px 9px;margin-left:4px" onclick="dbAnalyze('${r.id}','${r._source}')">▶ Analyze</button>`
-          : `<button class="btn btn-sm" style="font-size:11px;padding:4px 9px;margin-left:4px" onclick="dbAnalyzeUpload('${r.id}')" title="File not stored — pick it manually">Upload &amp; Analyze</button>`}
+          : `<button class="btn btn-sm" style="font-size:11px;padding:4px 9px;margin-left:4px" onclick="dbAnalyzeUpload('${r.id}')" title="File not stored: pick it manually">Upload &amp; Analyze</button>`}
       </td>
       <td><button class="db-del-btn" onclick="dbDelete('${r.id}','${r._source}')">✕</button></td>
     </tr>`).join('');
@@ -377,7 +377,7 @@ document.getElementById('btn-sdb-save').addEventListener('click', async () => {
       record.serverSaved = true;
       record.hasFile     = result.hasFile;
       await refreshServerRecords();
-      st.textContent = '✓ Saved to shared server — accessible from any computer';
+      st.textContent = '✓ Saved to shared server: accessible from any computer';
       st.style.color = 'var(--green)';
       st.style.display = '';
       btn.textContent = 'Saved ✓';
@@ -403,8 +403,8 @@ document.getElementById('btn-sdb-save').addEventListener('click', async () => {
   dbSave(records);
 
   st.textContent = record.hasFile
-    ? '✓ Saved locally — only accessible on this computer'
-    : '✓ Saved (metadata only — file not captured)';
+    ? '✓ Saved locally: only accessible on this computer'
+    : '✓ Saved (metadata only, file not captured)';
   st.style.color = record.hasFile ? 'var(--yellow)' : 'var(--text2)';
   st.style.display = '';
   btn.textContent = 'Saved ✓';

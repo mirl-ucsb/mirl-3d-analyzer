@@ -10,7 +10,7 @@
 
 import * as THREE from 'three';
 import { App } from '../core/state.js';
-import { scene, camera, controls, ambientLight, dirLight, fillLight } from '../core/scenes.js';
+import { scene, camera, controls, renderer, ambientLight, dirLight, fillLight } from '../core/scenes.js';
 
 export const Rake = { active: false, az: 135, alt: 24, intensity: 1.15, sweep: false };
 
@@ -21,6 +21,28 @@ const light = new THREE.DirectionalLight(0xfff4e6, 0);
 const target = new THREE.Object3D();
 scene.add(light); scene.add(target);
 light.target = target;
+// Optional cast shadows for deep relief. The shadow camera is sized to the
+// normalised model (max dimension 2, so a 1.8 half-extent holds it with margin).
+light.shadow.mapSize.set(2048, 2048);
+light.shadow.normalBias = 0.03;
+const shadowCam = light.shadow.camera;
+shadowCam.left = -1.8; shadowCam.right = 1.8; shadowCam.top = 1.8; shadowCam.bottom = -1.8;
+shadowCam.near = 0.1; shadowCam.far = 12;
+shadowCam.updateProjectionMatrix();
+
+// Cast shadows from the rake light. The mesh is double-sided, so the shadow map
+// records back-face depth (shadowSide) to keep a closed object from drowning its
+// own lit face in self-shadow.
+function setShadows(on) {
+  renderer.shadowMap.enabled = on;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  light.castShadow = on;
+  if (App.mesh) {
+    App.mesh.castShadow = on; App.mesh.receiveShadow = on;
+    App.mesh.material.shadowSide = THREE.BackSide;
+    App.mesh.material.needsUpdate = true;
+  }
+}
 
 // Place the light from the current azimuth/altitude, anchored to the view so a
 // chosen rake holds its screen position as the model is orbited.
@@ -62,12 +84,14 @@ function enable() {
   dirLight.intensity = 0;
   fillLight.intensity = 0;
   light.intensity = Rake.intensity;
+  setShadows(document.getElementById('chk-rake-shadow')?.checked ?? false);
   place();
 }
 
 export function disableRaking() {
   Rake.active = false; Rake.sweep = false;
   light.intensity = 0;
+  setShadows(false);
   // Restore the standard three-light setup from the lighting sliders.
   ambientLight.intensity = App.ambientInt;
   dirLight.intensity = App.dirInt;
@@ -137,6 +161,10 @@ function wire() {
     Rake.intensity = +e.target.value;
     document.getElementById('rake-int-v').textContent = Rake.intensity.toFixed(2);
     if (Rake.active) light.intensity = Rake.intensity;
+  });
+
+  document.getElementById('chk-rake-shadow').addEventListener('change', e => {
+    if (Rake.active) setShadows(e.target.checked);
   });
 
   document.getElementById('rake-sweep').addEventListener('click', () => {

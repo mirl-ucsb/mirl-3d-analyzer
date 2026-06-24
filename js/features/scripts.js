@@ -11,15 +11,15 @@ const SCRIPTS = {
     title:'Custom Script',
     code:`// MIRL Script API
 // Available variables:
-//   positions  — Float32Array [x0,y0,z0, x1,y1,z1, ...]
-//   normals    — Float32Array (same layout)
-//   curvature  — { mean, gaussian, curvedness } Float32Arrays
-//   nVerts     — number of vertices
+//   positions  : Float32Array [x0,y0,z0, x1,y1,z1, ...]
+//   normals    : Float32Array (same layout)
+//   curvature  : { mean, gaussian, curvedness } Float32Arrays
+//   nVerts     : number of vertices
 //
 // Functions:
-//   colorFromValues(values, cmap='turbo')  — apply color map
-//   setColors(r, g, b)                    — set raw RGB arrays (0–1)
-//   log(message)                          — print to output
+//   colorFromValues(values, cmap='turbo')  : apply color map
+//   setColors(r, g, b)                    : set raw RGB arrays (0 to 1)
+//   log(message)                          : print to output
 
 log("Model loaded: " + nVerts + " vertices");
 log("Mean curvature range: " +

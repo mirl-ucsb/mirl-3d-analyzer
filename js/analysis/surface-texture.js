@@ -27,7 +27,7 @@ document.getElementById('btn-brush-toggle').addEventListener('click', () => {
   if (!App.mesh) { alert('Load a model first.'); return; }
   Brush.active = !Brush.active;
   if (Brush.active) {
-    document.getElementById('btn-brush-toggle').textContent = '✓ Brush Active — click/drag';
+    document.getElementById('btn-brush-toggle').textContent = '✓ Brush Active: click or drag';
     document.getElementById('btn-brush-toggle').classList.add('btn-primary');
     renderer.domElement.style.cursor = 'crosshair';
     if (Measure.active) {
@@ -193,13 +193,13 @@ document.getElementById('btn-roughness-compute').addEventListener('click', () =>
     <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:7px">
       ISO 25178 · ${n.toLocaleString()} verts · k=${k}
     </div>
-    <div class="rrow"><span class="rkey">Sa — mean roughness</span><span class="rval">${fmt(Sa)}</span></div>
-    <div class="rrow"><span class="rkey">Sq — RMS roughness</span><span class="rval">${fmt(Sq)}</span></div>
-    <div class="rrow"><span class="rkey">Sz — 10-point height</span><span class="rval">${fmt(Sz)}</span></div>
-    <div class="rrow"><span class="rkey">Sp — max peak</span><span class="rval">${fmt(Sp)}</span></div>
-    <div class="rrow"><span class="rkey">Sv — max valley</span><span class="rval">${fmt(Sv)}</span></div>
-    <div class="rrow"><span class="rkey">Ssk — skewness</span><span class="rval">${Ssk.toFixed(3)}</span></div>
-    <div class="rrow"><span class="rkey">Sku — kurtosis</span><span class="rval">${Sku.toFixed(3)}</span></div>`;
+    <div class="rrow"><span class="rkey">Sa: mean roughness</span><span class="rval">${fmt(Sa)}</span></div>
+    <div class="rrow"><span class="rkey">Sq: RMS roughness</span><span class="rval">${fmt(Sq)}</span></div>
+    <div class="rrow"><span class="rkey">Sz: 10-point height</span><span class="rval">${fmt(Sz)}</span></div>
+    <div class="rrow"><span class="rkey">Sp: max peak</span><span class="rval">${fmt(Sp)}</span></div>
+    <div class="rrow"><span class="rkey">Sv: max valley</span><span class="rval">${fmt(Sv)}</span></div>
+    <div class="rrow"><span class="rkey">Ssk: skewness</span><span class="rval">${Ssk.toFixed(3)}</span></div>
+    <div class="rrow"><span class="rkey">Sku: kurtosis</span><span class="rval">${Sku.toFixed(3)}</span></div>`;
   document.getElementById('roughness-inline').style.display = '';
   // Store last results for CSV export (io/exports.js reads these)
   Brush.lastResults = { n, k, Sa, Sq, Sz, Sp, Sv, Ssk, Sku, scale: sc, unit: u };

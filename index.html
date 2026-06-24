@@ -185,6 +185,7 @@
               <label class="cl">Intensity <span id="rake-int-v">1.15</span></label>
               <div class="sr"><input type="range" id="rake-int" min="0.4" max="2.5" step="0.05" value="1.15"></div>
             </div>
+            <div class="cg"><label class="chk"><input type="checkbox" id="chk-rake-shadow"> Cast shadows (deep relief)</label></div>
             <div class="cg"><button class="btn btn-sm btn-block" id="rake-sweep">Sweep the light</button></div>
           </div>
         </div>
@@ -232,7 +233,7 @@
         <div class="ss-body">
           <div class="cg">
             <label class="chk"><input type="checkbox" id="chk-radiance"> Enable Radiance Scaling</label>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">Vergne et al. 2010 — scales diffuse by mean curvature to emphasize surface shape</div>
+            <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">Vergne et al. 2010: scales diffuse by mean curvature to emphasize surface shape</div>
           </div>
           <div id="rs-controls" style="display:none">
             <div class="cg">
@@ -293,7 +294,7 @@
               </select>
               <span style="font-size:10.5px;color:var(--text2);white-space:nowrap">/ unit</span>
             </div>
-            <div id="scale-status" style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">No scale set — results shown in mesh units.</div>
+            <div id="scale-status" style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">No scale set: results shown in mesh units.</div>
           </div>
         </div>
       </div>
@@ -455,7 +456,7 @@
       <div class="sidebar-section">
         <div class="ss-header" onclick="toggleSS(this)">Right Viewport <span class="ss-arrow">▾</span></div>
         <div class="ss-body">
-          <div class="cg"><label class="cl">Model</label><button class="compare-upload" id="cmp-load-right">Upload Right Model (OBJ)</button><input type="file" id="cmp-file-right" accept=".obj,.mtl,.jpg,.jpeg,.png" multiple style="display:none"><div style="font-size:10.5px;color:var(--text2);margin-top:4px" id="cmp-right-name">No file loaded — or use same as left</div></div>
+          <div class="cg"><label class="cl">Model</label><button class="compare-upload" id="cmp-load-right">Upload Right Model (OBJ)</button><input type="file" id="cmp-file-right" accept=".obj,.mtl,.jpg,.jpeg,.png" multiple style="display:none"><div style="font-size:10.5px;color:var(--text2);margin-top:4px" id="cmp-right-name">No file loaded, or use same as left</div></div>
           <div class="cg"><label class="cl">Analysis</label><select id="cmp-right-analysis"><option value="none">None (surface)</option><option value="mean" selected>Mean Curvature</option><option value="gaussian">Gaussian Curvature</option><option value="curvedness">Curvedness</option></select></div>
           <div class="cg"><label class="cl">Color Map</label><select id="cmp-right-cmap"><option value="turbo">Turbo</option><option value="viridis">Viridis</option><option value="coolwarm" selected>Cool-Warm</option><option value="gray">Grayscale</option></select></div>
         </div>
@@ -609,7 +610,7 @@
         </div>
         <div class="about-card">
           <h3>Tech Stack</h3>
-          <ul><li>Three.js r0.160 — 3D rendering</li><li>OBJLoader / MTLLoader — file support</li><li>CSS2DRenderer — annotation labels</li><li>Vanilla HTML/CSS/JS — no build step</li><li>Flask + PyVista + NumPy — optional backend</li></ul>
+          <ul><li>Three.js r0.160: 3D rendering</li><li>OBJLoader / MTLLoader: file support</li><li>CSS2DRenderer: annotation labels</li><li>Vanilla HTML/CSS/JS: no build step</li><li>Flask + PyVista + NumPy: optional backend</li></ul>
           <div style="margin-top:14px"><h3 style="margin-bottom:8px">How to Use</h3><p>Open in Chrome and drag an OBJ file onto the Viewer tab. Use the sidebar controls to explore surface analysis. Run the optional Python backend (<code style="font-size:11px;background:var(--bg);padding:1px 4px;border-radius:3px;">mirl-backend.py</code>) for higher-accuracy PyVista curvature.</p></div>
         </div>
         <div class="about-card">
@@ -620,7 +621,7 @@
         <div class="about-card">
           <h3>Contact &amp; Links</h3>
           <p style="margin-bottom:10px;">MIRL (Material / Image Research Lab)<br>UC Santa Barbara</p>
-          <ul><li>Email — <a href="mailto:mirl@arthistory.ucsb.edu" style="color:var(--accent)">mirl@arthistory.ucsb.edu</a></li><li>Lab website — <a href="https://mirl.arthistory.ucsb.edu/about/" target="_blank" style="color:var(--accent)">mirl.arthistory.ucsb.edu</a></li><li>Department — History of Art and Architecture</li><li>GitHub — <a href="https://github.com/mirl-ucsb" target="_blank" style="color:var(--accent)">github.com/mirl-ucsb</a></li></ul>
+          <ul><li>Email: <a href="mailto:mirl@arthistory.ucsb.edu" style="color:var(--accent)">mirl@arthistory.ucsb.edu</a></li><li>Lab website: <a href="https://mirl.arthistory.ucsb.edu/about/" target="_blank" style="color:var(--accent)">mirl.arthistory.ucsb.edu</a></li><li>Department: History of Art and Architecture</li><li>GitHub: <a href="https://github.com/mirl-ucsb" target="_blank" style="color:var(--accent)">github.com/mirl-ucsb</a></li></ul>
         </div>
       </div>
       <div class="about-footer">MIRL 3D Artifact Analyzer v2 &nbsp;·&nbsp; MIRL (Material / Image Research Lab) &nbsp;·&nbsp; UC Santa Barbara<br>Built with Three.js, Flask, and PyVista</div>

@@ -96,7 +96,7 @@ document.getElementById('btn-export-report').addEventListener('click', () => {
   const roughnessMetrics = {};
   if (roughnessEl && roughnessEl.style.display !== 'none') {
     roughnessEl.querySelectorAll('.rrow').forEach(row => {
-      const k = row.querySelector('.rkey')?.textContent?.replace(/—.*$/, '').trim();
+      const k = row.querySelector('.rkey')?.textContent?.replace(/[:—].*$/, '').trim();
       const v = row.querySelector('.rval')?.textContent?.trim();
       if (k) roughnessMetrics[k] = v;
     });

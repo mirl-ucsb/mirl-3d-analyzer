@@ -29,7 +29,7 @@ document.getElementById('scale-mm').addEventListener('input', e => {
     st.style.color = 'var(--green)';
   } else {
     Scale.mmPerUnit = null;
-    st.textContent = 'No scale set — results shown in mesh units.';
+    st.textContent = 'No scale set: results shown in mesh units.';
     st.style.color = 'var(--text2)';
   }
 });
