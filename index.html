@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/tabs.css">
+<link rel="stylesheet" href="css/specimen.css">
 
 <style id="file-protocol-warning-style">
   #file-protocol-warning {
@@ -229,6 +230,10 @@
             <div class="sr"><input type="range" id="clip-pos" min="0" max="100" value="50"><span class="sv" id="clip-pos-v">50%</span></div>
           </div>
           <div class="cg"><label class="chk"><input type="checkbox" id="chk-clip-flip"> Flip Direction</label></div>
+          <div class="cg">
+            <button class="btn btn-sm btn-block" id="btn-export-profile">Export Profile SVG</button>
+            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">A 2D section drawing at the current cut, in the archaeological profile convention. Set a physical scale for a scale bar.</div>
+          </div>
         </div>
       </div>
 
@@ -315,6 +320,11 @@
         <div class="ss-body">
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:8px">Visualizations</div>
           <div class="cg"><button class="btn btn-sm btn-block" id="btn-png">Screenshot PNG</button></div>
+          <div class="cg"><label class="chk"><input type="checkbox" id="chk-fig-scalebar" checked> Scale bar (needs a set scale)</label></div>
+          <div class="cg"><label class="chk"><input type="checkbox" id="chk-fig-axis" checked> Orientation triad</label></div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin:10px 0 8px">Document</div>
+          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-specimen-sheet">Specimen Sheet (Print)</button>
+            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">A one-page object record: view, dimensions, quality, roughness, measurements, and annotations. Save to PDF from the print dialog.</div></div>
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin:10px 0 8px">Analysis Data</div>
           <div class="cg"><button class="btn btn-sm btn-block" id="btn-csv">Curvature CSV</button></div>
           <div class="cg"><button class="btn btn-sm btn-block" id="btn-export-roughness">Roughness Report CSV</button></div>
@@ -574,6 +584,9 @@
     </div>
   </div>
 </div>
+
+<!-- Specimen sheet print preview (populated on demand by js/io/figures.js) -->
+<div id="specimen-overlay"></div>
 
 <script type="importmap">
 {

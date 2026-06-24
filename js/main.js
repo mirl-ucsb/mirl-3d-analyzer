@@ -36,6 +36,8 @@ import './features/scripts.js';
 import './features/database.js';
 
 import './io/file-upload.js';
+import './io/figures.js';
+import './io/profile-svg.js';
 import './io/exports.js';
 
 import './backend/client.js';
