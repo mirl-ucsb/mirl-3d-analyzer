@@ -139,6 +139,7 @@ document.getElementById('btn-export-report').addEventListener('click', () => {
       gaussian: stats(App.curv.gaussian),
       curvedness: stats(App.curv.curvedness)
     },
+    wall_thickness_units: App.curv.thickness ? stats(App.curv.thickness) : null,
     surface_roughness: Object.keys(roughnessMetrics).length ? roughnessMetrics : null,
     measurements: measurementList.length ? measurementList : null,
     annotations: App.annotations.length ? App.annotations : null

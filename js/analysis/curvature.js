@@ -7,6 +7,34 @@ import * as THREE from 'three';
 import { App } from '../core/state.js';
 import { getCmap, legendGradient } from './color-maps.js';
 import { buildBaseColorAttr } from './radiance-scaling.js';
+import { Scale } from './measurement.js';
+
+const FIELD_LABELS = { mean: 'Mean Curvature', gaussian: 'Gaussian Curvature', curvedness: 'Curvedness', thickness: 'Wall Thickness' };
+
+// Paint a per-vertex scalar field into the geometry's color attribute. No-hit
+// vertices (NaN, e.g. open boundaries in the thickness map) render neutral.
+function writeField(geo, data, cmap, lo, hi) {
+  const range = hi - lo || 1, nV = data.length, cols = new Float32Array(nV * 3);
+  for (let i = 0; i < nV; i++) {
+    if (!isFinite(data[i])) { cols[i * 3] = 0.80; cols[i * 3 + 1] = 0.80; cols[i * 3 + 2] = 0.76; continue; }
+    const t = (data[i] - lo) / range, [r, g, b] = cmap(t);
+    cols[i * 3] = r; cols[i * 3 + 1] = g; cols[i * 3 + 2] = b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  return geo.attributes.color;
+}
+
+// Thickness is a real length, so its legend reads in physical units when a
+// scale is set; curvature stays unitless.
+function updateLegend(mode, cmapName, lo, hi) {
+  let l = lo, h = hi, suf = '', dp = 4;
+  if (mode === 'thickness') { dp = 2; if (Scale.mmPerUnit) { l = lo * Scale.mmPerUnit; h = hi * Scale.mmPerUnit; suf = ' ' + Scale.unit; } }
+  document.getElementById('legend-title').textContent = FIELD_LABELS[mode] || '';
+  document.getElementById('legend-bar').style.background = legendGradient(cmapName);
+  document.getElementById('legend-min').textContent = l.toFixed(dp) + suf;
+  document.getElementById('legend-max').textContent = h.toFixed(dp) + suf;
+  document.getElementById('color-legend').classList.add('visible');
+}
 
 export function computeCurvature(geo) {
   const pos = geo.attributes.position;
@@ -171,63 +199,36 @@ export function computeCurvature(geo) {
 }
 
 export function applyColors(geo, mesh, curvMode, cmapName, clipLo, clipHi) {
-  // ── Radiance Scaling mode: update color BufferAttribute only; ShaderMaterial handles rendering ──
+  const data = curvMode !== 'none' ? App.curv[curvMode] : null;
+
+  function percentiles() {
+    const sorted = [...data].filter(isFinite).sort((a, b) => a - b);
+    return [sorted[Math.floor(sorted.length * clipLo / 100)] || 0, sorted[Math.floor(sorted.length * clipHi / 100)] || 1];
+  }
+
+  // ── Radiance Scaling mode: update color attribute only; the shader renders ──
   if (App.radianceScaling) {
-    if (curvMode === 'none' || !App.curv[curvMode]) {
-      buildBaseColorAttr(geo);
-      document.getElementById('color-legend').classList.remove('visible');
-      return;
-    }
-    const data = App.curv[curvMode];
-    const cmap = getCmap(cmapName);
-    const sorted = [...data].filter(isFinite).sort((a,b) => a-b);
-    const lo = sorted[Math.floor(sorted.length * clipLo / 100)] || 0;
-    const hi = sorted[Math.floor(sorted.length * clipHi / 100)] || 1;
-    const range = hi - lo || 1;
-    const nV = data.length;
-    const cols = new Float32Array(nV * 3);
-    for (let i = 0; i < nV; i++) {
-      const t = (data[i]-lo)/range, [r,g,b] = cmap(t);
-      cols[i*3]=r; cols[i*3+1]=g; cols[i*3+2]=b;
-    }
-    geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-    geo.attributes.color.needsUpdate = true;
-    const labels = {mean:'Mean Curvature', gaussian:'Gaussian Curvature', curvedness:'Curvedness'};
-    document.getElementById('legend-title').textContent = labels[curvMode] || '';
-    document.getElementById('legend-bar').style.background = legendGradient(cmapName);
-    document.getElementById('legend-min').textContent = lo.toFixed(4);
-    document.getElementById('legend-max').textContent = hi.toFixed(4);
-    document.getElementById('color-legend').classList.add('visible');
+    if (!data) { buildBaseColorAttr(geo); document.getElementById('color-legend').classList.remove('visible'); return; }
+    const [lo, hi] = percentiles();
+    writeField(geo, data, getCmap(cmapName), lo, hi).needsUpdate = true;
+    updateLegend(curvMode, cmapName, lo, hi);
     return;
   }
 
   // ── Standard Phong path ──
-  if(curvMode==='none'||!App.curv[curvMode]){
-    mesh.material.vertexColors=false;
+  if (!data) {
+    mesh.material.vertexColors = false;
     mesh.material.color.set(0xccccbb);
-    mesh.material.needsUpdate=true;
+    mesh.material.needsUpdate = true;
     document.getElementById('color-legend').classList.remove('visible');
     return;
   }
-  const data=App.curv[curvMode];
-  const cmap=getCmap(cmapName);
-  const sorted=[...data].filter(isFinite).sort((a,b)=>a-b);
-  const lo=sorted[Math.floor(sorted.length*clipLo/100)]||0;
-  const hi=sorted[Math.floor(sorted.length*clipHi/100)]||1;
-  const range=hi-lo||1;
-  const nV=data.length;
-  const cols=new Float32Array(nV*3);
-  for(let i=0;i<nV;i++){const t=(data[i]-lo)/range,[r,g,b]=cmap(t);cols[i*3]=r;cols[i*3+1]=g;cols[i*3+2]=b;}
-  geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
-  mesh.material.vertexColors=true;
+  const [lo, hi] = percentiles();
+  writeField(geo, data, getCmap(cmapName), lo, hi);
+  mesh.material.vertexColors = true;
   mesh.material.color.set(0xffffff);
-  mesh.material.needsUpdate=true;
-  const labels={mean:'Mean Curvature',gaussian:'Gaussian Curvature',curvedness:'Curvedness'};
-  document.getElementById('legend-title').textContent=labels[curvMode]||'';
-  document.getElementById('legend-bar').style.background=legendGradient(cmapName);
-  document.getElementById('legend-min').textContent=lo.toFixed(4);
-  document.getElementById('legend-max').textContent=hi.toFixed(4);
-  document.getElementById('color-legend').classList.add('visible');
+  mesh.material.needsUpdate = true;
+  updateLegend(curvMode, cmapName, lo, hi);
 }
 
 export function applyCurvatureColors() {

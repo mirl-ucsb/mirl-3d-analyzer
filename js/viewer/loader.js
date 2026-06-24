@@ -137,6 +137,12 @@ export function loadMainModel(files) {
       updateQualityCard();
       App.metrics=computeMetrics(geo);
       renderMetrics();
+      // Wall thickness is computed on demand, not carried across models; if it was
+      // the active map, fall back to no map for the fresh mesh.
+      if (App.curvMode === 'thickness') {
+        App.curvMode = 'none';
+        document.querySelectorAll('#curv-mode .tb').forEach(x => x.classList.toggle('active', x.dataset.curv === 'none'));
+      }
       updateViewMode();
       updateClipping();
       applyCurvatureColors();

@@ -11,6 +11,8 @@ import { updateViewMode, updateClipping, clearOverlays } from '../viewer/view-mo
 import { detachGizmo } from '../viewer/gizmo.js';
 import { resetRaking } from '../viewer/raking.js';
 import { renderMetrics } from '../analysis/metrics.js';
+import { computeThickness } from '../analysis/thickness.js';
+import { showLoad, hideLoad } from '../core/loading.js';
 import { renderAnnotationList, exportAnnotations } from '../features/annotations.js';
 import { rendererAnn } from '../core/scenes.js';
 import { Measure } from '../analysis/measurement.js';
@@ -56,11 +58,21 @@ document.getElementById('lgt-shininess').addEventListener('input', e => {
   if (App.mesh?.material?.shininess !== undefined) App.mesh.material.shininess = App.shininess;
 });
 
-// ── Curvature ──
+// ── Curvature (and the wall-thickness map, computed lazily on first use) ──
 document.getElementById('curv-mode').addEventListener('click', e => {
   const b = e.target.closest('.tb'); if (!b) return;
   document.querySelectorAll('#curv-mode .tb').forEach(x => x.classList.remove('active'));
-  b.classList.add('active'); App.curvMode = b.dataset.curv; applyCurvatureColors(); updateViewMode();
+  b.classList.add('active'); App.curvMode = b.dataset.curv;
+  if (App.curvMode === 'thickness' && App.geo && !App.curv.thickness) {
+    showLoad('Computing wall thickness…');
+    setTimeout(() => {
+      App.curv.thickness = computeThickness(App.geo);
+      applyCurvatureColors(); updateViewMode();
+      hideLoad();
+    }, 30);
+  } else {
+    applyCurvatureColors(); updateViewMode();
+  }
 });
 
 // ── Colormap ──

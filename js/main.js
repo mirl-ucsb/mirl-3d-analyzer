@@ -30,6 +30,7 @@ import './viewer/raking.js';
 
 import './analysis/measurement.js';
 import './analysis/metrics.js';
+import './analysis/thickness.js';
 import './analysis/surface-texture.js';
 
 import './features/annotations.js';
