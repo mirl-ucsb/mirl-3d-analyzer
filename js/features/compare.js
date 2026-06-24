@@ -96,6 +96,29 @@ function robustAbsMax(dev) {
   return a[Math.floor(a.length * 0.98)] || a[a.length - 1] || 1;
 }
 
+// A colour-coded histogram of the deviation field, with a dashed zero line.
+function renderHistogram(dev, absMax) {
+  const host = document.getElementById('cmp-dev-hist'); if (!host) return;
+  const NB = 41, lo = -absMax, range = (2 * absMax) || 1;
+  const bins = new Float32Array(NB);
+  let maxCount = 0;
+  for (let i = 0; i < dev.length; i++) {
+    if (!isFinite(dev[i])) continue;
+    let b = Math.floor((dev[i] - lo) / range * NB);
+    b = b < 0 ? 0 : b >= NB ? NB - 1 : b;
+    if (++bins[b] > maxCount) maxCount = bins[b];
+  }
+  const W = 212, H = 60, bw = W / NB, cmap = getCmap('coolwarm');
+  let bars = '';
+  for (let b = 0; b < NB; b++) {
+    const h = maxCount ? bins[b] / maxCount * H : 0;
+    const [r, g, bl] = cmap((b + 0.5) / NB);
+    bars += `<rect x="${(b * bw).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${(bw - 0.4).toFixed(1)}" height="${h.toFixed(1)}" fill="rgb(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(bl * 255)})"/>`;
+  }
+  const zx = (W / 2).toFixed(1);
+  host.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;border-bottom:1px solid var(--border)">${bars}<line x1="${zx}" y1="0" x2="${zx}" y2="${H}" stroke="var(--ink)" stroke-width="0.8" stroke-dasharray="2 2"/></svg>`;
+}
+
 function refGrid() {
   App.cmpMeshL.updateMatrixWorld(true);
   return buildGrid(App.cmpGeoL, App.cmpMeshL.matrixWorld);
@@ -127,13 +150,32 @@ document.getElementById('btn-cmp-deviation').addEventListener('click', () => {
     App.cmpMeshR.updateMatrixWorld(true);
     const { dev, rms } = computeDeviation(App.cmpGeoR, App.cmpMeshR.matrixWorld, refGrid());
     const absMax = robustAbsMax(dev);
+    App.cmpDev = dev;
     applyDeviationColors(App.cmpGeoR, App.cmpMeshR, dev, absMax);
     document.getElementById('cmp-dev-bar').style.background = legendGradient('coolwarm');
     document.getElementById('cmp-dev-lo').textContent = '-' + fmtLen(absMax);
     document.getElementById('cmp-dev-hi').textContent = '+' + fmtLen(absMax);
     document.getElementById('cmp-dev-rms').textContent = `RMS deviation: ${fmtLen(rms)}`;
+    renderHistogram(dev, absMax);
     document.getElementById('cmp-dev-legend').style.display = '';
     document.getElementById('cmp-dev-status').textContent = '';
     hideLoad();
   }, 30);
+});
+
+document.getElementById('btn-cmp-dev-csv').addEventListener('click', () => {
+  if (!App.cmpDev || !App.cmpGeoR) { alert('Compute a deviation map first.'); return; }
+  const dev = App.cmpDev, pos = App.cmpGeoR.attributes.position;
+  App.cmpMeshR.updateMatrixWorld(true);
+  const m = App.cmpMeshR.matrixWorld, v = new THREE.Vector3(), k = Scale.mmPerUnit;
+  let csv = 'vertex,x,y,z,deviation_units' + (k ? `,deviation_${Scale.unit}` : '') + '\n';
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i).applyMatrix4(m);
+    const d = dev[i], ds = isFinite(d) ? d.toFixed(6) : '';
+    csv += `${i},${v.x.toFixed(5)},${v.y.toFixed(5)},${v.z.toFixed(5)},${ds}` + (k ? `,${isFinite(d) ? (d * k).toFixed(4) : ''}` : '') + '\n';
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = `MIRL_deviation_${(App.cmpNameR || 'test').replace(/\.\w+$/, '')}.csv`;
+  a.click();
 });

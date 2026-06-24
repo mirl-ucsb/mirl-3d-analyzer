@@ -86,9 +86,68 @@ function turntable() {
   step();
 }
 
+// ── Live corner axis cube ──
+// A small triad in the viewport corner that tracks the camera. Click an axis to
+// snap to that view. Shows world axes relative to the camera, the usual
+// navigation-cube convention.
+const NS = 'http://www.w3.org/2000/svg';
+const CUBE_C = 39, CUBE_L = 25;
+const AXES = [
+  { key: 'x', view: 'right', col: '#8a2a17', label: 'X', v: new THREE.Vector3(1, 0, 0) },
+  { key: 'y', view: 'top',   col: '#2d4f6e', label: 'Y', v: new THREE.Vector3(0, 1, 0) },
+  { key: 'z', view: 'front', col: '#6b7a3a', label: 'Z', v: new THREE.Vector3(0, 0, 1) },
+];
+
+function buildCube() {
+  const vp = document.getElementById('viewer-vp');
+  if (!vp || document.getElementById('axis-cube')) return;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.id = 'axis-cube';
+  svg.setAttribute('viewBox', '0 0 78 78');
+  svg.style.cssText = 'position:absolute;right:14px;bottom:14px;width:78px;height:78px;pointer-events:none;z-index:5';
+  const bg = document.createElementNS(NS, 'circle');
+  bg.setAttribute('cx', '39'); bg.setAttribute('cy', '39'); bg.setAttribute('r', '37');
+  bg.setAttribute('fill', '#fcf9ef'); bg.setAttribute('fill-opacity', '0.72');
+  bg.setAttribute('stroke', '#bfb494'); bg.setAttribute('stroke-width', '1');
+  svg.appendChild(bg);
+  for (const a of AXES) {
+    a.line = document.createElementNS(NS, 'line');
+    a.line.setAttribute('x1', '39'); a.line.setAttribute('y1', '39');
+    a.line.setAttribute('stroke', a.col); a.line.setAttribute('stroke-width', '2');
+    a.dot = document.createElementNS(NS, 'circle');
+    a.dot.setAttribute('r', '8'); a.dot.setAttribute('fill', a.col);
+    a.dot.style.cssText = 'pointer-events:auto;cursor:pointer';
+    a.dot.addEventListener('click', () => setView(a.view));
+    a.txt = document.createElementNS(NS, 'text');
+    a.txt.setAttribute('fill', '#fcf9ef'); a.txt.setAttribute('font-size', '9');
+    a.txt.setAttribute('font-family', "'IBM Plex Mono','Plex Mono',monospace");
+    a.txt.setAttribute('text-anchor', 'middle'); a.txt.setAttribute('dominant-baseline', 'central');
+    a.txt.style.pointerEvents = 'none'; a.txt.textContent = a.label;
+    svg.append(a.line, a.dot, a.txt);
+  }
+  vp.appendChild(svg);
+}
+
+function updateCube() {
+  if (!document.getElementById('axis-cube')) return;
+  const q = camera.quaternion.clone().invert();
+  const proj = AXES.map(a => ({ a, p: a.v.clone().applyQuaternion(q) })).sort((m, n) => m.p.z - n.p.z);
+  for (const { a, p } of proj) {
+    const x = CUBE_C + p.x * CUBE_L, y = CUBE_C - p.y * CUBE_L;
+    a.line.setAttribute('x2', x.toFixed(1)); a.line.setAttribute('y2', y.toFixed(1));
+    a.dot.setAttribute('cx', x.toFixed(1)); a.dot.setAttribute('cy', y.toFixed(1));
+    a.txt.setAttribute('x', x.toFixed(1)); a.txt.setAttribute('y', y.toFixed(1));
+    a.line.parentNode.append(a.line, a.dot, a.txt);   // re-stack back-to-front
+  }
+}
+
 // ── UI wiring ──
 document.getElementById('view-presets').addEventListener('click', e => {
   const b = e.target.closest('.tb'); if (!b) return;
   setView(b.dataset.view);
 });
 document.getElementById('btn-turntable').addEventListener('click', turntable);
+
+buildCube();
+updateCube();
+controls.addEventListener('change', updateCube);

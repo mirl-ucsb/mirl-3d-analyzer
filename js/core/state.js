@@ -24,6 +24,7 @@ export const App = {
   cmpGeoR: null, cmpMeshR: null, cmpCurvR: {}, cmpNameR: '',
   cmpAnalysisL: 'none', cmpAnalysisR: 'mean',
   cmpCmapL: 'turbo', cmpCmapR: 'coolwarm',
+  cmpDev: null,                 // last per-vertex deviation field (Float32Array) on the test mesh
   syncCam: true,
 
   // Lighting

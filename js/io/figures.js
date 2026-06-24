@@ -20,10 +20,17 @@ const INK = '#211d12', PAPER = '#f4efe1';
 // Device pixels the renderer is drawing into, vs the CSS pixels on screen.
 const dpr = () => renderer.domElement.width / renderer.domElement.clientWidth;
 
-// Screen pixels spanned by one mesh unit at the orbit target's depth. Exact on
-// that plane, which is where a centred object sits, so it reads as true.
+// Screen pixels spanned by one mesh unit, measured at the object's own centre
+// depth (not the orbit target), so the bar stays true when the object is panned
+// off-centre or the camera is dollied past the target.
 function pxPerUnit() {
-  const o = controls.target.clone();
+  const o = new THREE.Vector3();
+  if (App.mesh && App.geo?.boundingBox) {
+    App.geo.boundingBox.getCenter(o);
+    o.applyMatrix4(App.mesh.matrixWorld);
+  } else {
+    o.copy(controls.target);
+  }
   const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
   const p0 = o.clone().project(camera), p1 = o.add(right).project(camera);
   const w = renderer.domElement.width, h = renderer.domElement.height;
