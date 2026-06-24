@@ -125,6 +125,15 @@ document.getElementById('btn-export-report').addEventListener('click', () => {
       scale: Scale.mmPerUnit ? { factor: Scale.mmPerUnit, unit: Scale.unit } : null
     },
     quality: q ? { grade: q.grade, score: q.score, label: q.label, uniformity: +(q.uniformity * 100).toFixed(1), open_edges: q.boundaryEdges } : null,
+    metrics: App.metrics ? {
+      surface_area_units: +App.metrics.area.toFixed(5),
+      surface_area_physical: Scale.mmPerUnit ? +(App.metrics.area * Scale.mmPerUnit ** 2).toFixed(3) : null,
+      volume_units: +App.metrics.volume.toFixed(5),
+      volume_physical: Scale.mmPerUnit ? +(App.metrics.volume * Scale.mmPerUnit ** 3).toFixed(3) : null,
+      volume_watertight: App.metrics.watertight,
+      oriented_dimensions_units: { l: +App.metrics.oriented.l.toFixed(4), w: +App.metrics.oriented.w.toFixed(4), h: +App.metrics.oriented.h.toFixed(4) },
+      unit: Scale.unit,
+    } : null,
     curvature: {
       mean: stats(App.curv.mean),
       gaussian: stats(App.curv.gaussian),

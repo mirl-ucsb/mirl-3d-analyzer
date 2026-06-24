@@ -10,6 +10,7 @@ import { applyCurvatureColors } from '../analysis/curvature.js';
 import { updateViewMode, updateClipping, clearOverlays } from '../viewer/view-modes.js';
 import { detachGizmo } from '../viewer/gizmo.js';
 import { resetRaking } from '../viewer/raking.js';
+import { renderMetrics } from '../analysis/metrics.js';
 import { renderAnnotationList, exportAnnotations } from '../features/annotations.js';
 import { rendererAnn } from '../core/scenes.js';
 import { Measure } from '../analysis/measurement.js';
@@ -97,7 +98,8 @@ document.getElementById('btn-new').addEventListener('click', () => {
   if (App.meshAnn) sceneAnn.remove(App.meshAnn);
   App.annMarkers.forEach(m => { sceneAnn.remove(m.mesh); sceneAnn.remove(m.label); });
   App.annMarkers = []; App.annotations = [];
-  App.geo = null; App.mesh = null; App.curv = {}; App.qual = null;
+  App.geo = null; App.mesh = null; App.curv = {}; App.qual = null; App.metrics = null;
+  renderMetrics();
   document.getElementById('viewer-upload').classList.remove('hidden');
   document.getElementById('ann-upload-msg').classList.remove('hidden');
   document.getElementById('info-bar').classList.remove('visible');

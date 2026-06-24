@@ -5,7 +5,7 @@
 
 export const App = {
   // Main model
-  geo: null, mesh: null, curv: {}, qual: null, fileName: '',
+  geo: null, mesh: null, curv: {}, qual: null, metrics: null, fileName: '',
   viewMode: 'solid', curvMode: 'none', cmap: 'turbo',
   bgColor: '#dedad4',
   clipEnabled: false, clipAxis: 'x', clipPos: 0.5, clipFlip: false,

@@ -12,6 +12,7 @@ import { scene, sceneAnn, camera, controls, cameraAnn, controlsAnn } from '../co
 import { showLoad, hideLoad } from '../core/loading.js';
 import { computeCurvature, applyCurvatureColors } from '../analysis/curvature.js';
 import { computeQuality, updateQualityCard } from '../analysis/quality.js';
+import { computeMetrics, renderMetrics } from '../analysis/metrics.js';
 import { updateViewMode, updateClipping, clearOverlays } from './view-modes.js';
 import { detachGizmo } from './gizmo.js';
 import { resetRaking } from './raking.js';
@@ -134,6 +135,8 @@ export function loadMainModel(files) {
       App.curv=computeCurvature(geo);
       App.qual=computeQuality(geo);
       updateQualityCard();
+      App.metrics=computeMetrics(geo);
+      renderMetrics();
       updateViewMode();
       updateClipping();
       applyCurvatureColors();

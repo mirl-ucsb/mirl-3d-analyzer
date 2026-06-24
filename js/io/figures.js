@@ -12,6 +12,7 @@ import * as THREE from 'three';
 import { App } from '../core/state.js';
 import { renderer, scene, camera, controls } from '../core/scenes.js';
 import { Measure, Scale, fmtDist } from '../analysis/measurement.js';
+import { formatMetrics } from '../analysis/metrics.js';
 import { setGizmoVisibleForCapture } from '../viewer/gizmo.js';
 
 const INK = '#211d12', PAPER = '#f4efe1';
@@ -131,11 +132,15 @@ function buildSheet() {
 
   const row = (k, v) => `<div class="sp-row"><span class="sp-k">${esc(k)}</span><span class="sp-v">${esc(v)}</span></div>`;
 
+  const fm = formatMetrics();
   const specimen = [
     row('File', App.fileName || '—'),
     row('Scan quality', q ? `${q.grade} · ${q.label} (${q.score}/100)` : '—'),
-    row('Dimensions', dimUnits),
+    row('Dimensions (bounding box)', dimUnits),
     dimPhys ? row('', dimPhys) : '',
+    fm ? row('Oriented L × W × H', fm.oriented) : '',
+    fm ? row('Surface area', fm.area) : '',
+    fm ? row('Volume', fm.volume + (fm.watertight ? '' : ' (approx., open mesh)')) : '',
     row('Scale', phys ? `1 mesh unit = ${phys} ${Scale.unit}` : 'not set'),
     row('Vertices', q ? q.nV.toLocaleString() : '—'),
     row('Faces', q ? q.nF.toLocaleString() : '—'),

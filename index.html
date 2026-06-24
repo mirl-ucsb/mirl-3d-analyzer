@@ -290,6 +290,23 @@
       </div>
 
       <div class="sidebar-section">
+        <div class="ss-header" onclick="toggleSS(this)">Object Metrics <span class="ss-arrow">▾</span></div>
+        <div class="ss-body">
+          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px dotted var(--border)">
+            <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Surface area</span><span id="mt-area" style="text-align:right">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px dotted var(--border)">
+            <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Volume</span><span id="mt-vol" style="text-align:right">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px dotted var(--border)">
+            <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Oriented L×W×H</span><span id="mt-oriented" style="text-align:right">—</span>
+          </div>
+          <div id="mt-note" style="font-size:10px;color:var(--accent);margin-top:5px;line-height:1.4"></div>
+          <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Oriented dimensions follow the object's principal axes, not the screen box. Set a physical scale above for real units; volume needs a watertight mesh.</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
         <div class="ss-header" onclick="toggleSS(this)">Measurement <span class="ss-arrow">▾</span></div>
         <div class="ss-body">
           <div class="cg">
