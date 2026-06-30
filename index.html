@@ -223,8 +223,11 @@
               <button class="tb" data-curv="gaussian">Gaussian</button>
               <button class="tb" data-curv="curvedness">Curvedness</button>
               <button class="tb" data-curv="thickness">Thickness</button>
+              <button class="tb" data-curv="shapeIndex">Shape Idx</button>
+              <button class="tb" data-curv="classification">SI Class</button>
             </div>
             <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">Thickness maps the wall depth from each point to the opposite surface. Set a physical scale for real units. Open areas read neutral.</div>
+            <div id="si-class-legend-sidebar" style="display:none;margin-top:8px"></div>
           </div>
           <div class="cg">
             <label class="cl">Color Map</label>
@@ -379,6 +382,31 @@
             <button class="btn btn-sm" id="btn-brush-clear">Clear</button>
           </div>
           <div id="roughness-inline" style="display:none;margin-top:8px;font-size:11.5px;border-top:1px solid var(--border);padding-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="ss-header collapsed" onclick="toggleSS(this)">Wall Thickness <span class="ss-arrow">▾</span></div>
+        <div class="ss-body">
+          <div class="cg"><div style="font-size:10.5px;color:var(--text2);line-height:1.4">Shape Diameter Function — median of inward cone rays per vertex. Works best on near-closed (watertight) meshes. Large meshes may take 10–30 seconds.</div></div>
+          <div class="cg">
+            <label class="cl">Rays per cone <span id="wt-rays-v">11</span></label>
+            <div class="sr"><input type="range" id="wt-rays" min="5" max="21" step="2" value="11"></div>
+          </div>
+          <div class="cg">
+            <label class="cl">Cone half-angle <span id="wt-cone-v">30</span>°</label>
+            <div class="sr"><input type="range" id="wt-cone" min="10" max="60" step="5" value="30"></div>
+          </div>
+          <div class="cg">
+            <label class="cl">Subsample (speed)</label>
+            <div class="tg" id="wt-sub-tg">
+              <button class="tb active" data-sub="1">Full</button>
+              <button class="tb" data-sub="2">2×</button>
+              <button class="tb" data-sub="4">4× fast</button>
+            </div>
+          </div>
+          <div class="cg"><button class="btn btn-sm btn-primary btn-block" id="btn-wt-compute">Compute Thickness Map</button></div>
+          <div id="wt-inline" style="display:none;margin-top:8px;font-size:11.5px;border-top:1px solid var(--border);padding-top:8px"></div>
         </div>
       </div>
 
@@ -689,7 +717,8 @@
 {
   "imports": {
     "three": "./vendor/three/three.module.js",
-    "three/addons/": "./vendor/three/addons/"
+    "three/addons/": "./vendor/three/addons/",
+    "three-mesh-bvh": "https://esm.sh/three-mesh-bvh@0.7.4?external=three"
   }
 }
 </script>

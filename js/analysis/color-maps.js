@@ -29,8 +29,15 @@ export function gray(t) {
   return [t, t, t];
 }
 
+export function plasma(t) {
+  t = Math.max(0, Math.min(1, t));
+  const c = [[.050,.030,.528],[.295,.010,.623],[.524,.039,.564],[.706,.085,.436],[.843,.185,.276],[.929,.334,.143],[.974,.518,.040],[.984,.731,.079],[.940,.975,.131]];
+  const i = t * (c.length - 1), lo = Math.floor(i), hi = Math.min(lo + 1, c.length - 1), f = i - lo;
+  return [c[lo][0] + f*(c[hi][0]-c[lo][0]), c[lo][1] + f*(c[hi][1]-c[lo][1]), c[lo][2] + f*(c[hi][2]-c[lo][2])];
+}
+
 export function getCmap(name) {
-  return ({ turbo, viridis, coolwarm, gray })[name] || turbo;
+  return ({ turbo, viridis, coolwarm, gray, plasma })[name] || turbo;
 }
 
 export function legendGradient(n) {

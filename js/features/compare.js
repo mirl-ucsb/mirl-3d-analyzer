@@ -78,7 +78,7 @@ function applyDeviationColors(geo, mesh, dev, absMax) {
   const scale = absMax || 1;
   for (let i = 0; i < nV; i++) {
     if (!isFinite(dev[i])) { cols[i * 3] = 0.80; cols[i * 3 + 1] = 0.80; cols[i * 3 + 2] = 0.76; continue; }
-    const t = 0.5 + 0.5 * Math.max(-1, Math.min(1, dev[i] / scale));   // diverging, centred at zero
+    const t = 0.5 + 0.5 * Math.max(-1, Math.min(1, dev[i] / scale));
     const [r, g, b] = cmap(t);
     cols[i * 3] = r; cols[i * 3 + 1] = g; cols[i * 3 + 2] = b;
   }
@@ -86,8 +86,6 @@ function applyDeviationColors(geo, mesh, dev, absMax) {
   mesh.material.vertexColors = true; mesh.material.color.set(0xffffff); mesh.material.needsUpdate = true;
 }
 
-// Robust symmetric range: the 98th percentile of |deviation|, so a few outliers
-// do not flatten the colour scale.
 function robustAbsMax(dev) {
   const a = [];
   for (let i = 0; i < dev.length; i++) if (isFinite(dev[i])) a.push(Math.abs(dev[i]));
@@ -96,7 +94,6 @@ function robustAbsMax(dev) {
   return a[Math.floor(a.length * 0.98)] || a[a.length - 1] || 1;
 }
 
-// A colour-coded histogram of the deviation field, with a dashed zero line.
 function renderHistogram(dev, absMax) {
   const host = document.getElementById('cmp-dev-hist'); if (!host) return;
   const NB = 41, lo = -absMax, range = (2 * absMax) || 1;

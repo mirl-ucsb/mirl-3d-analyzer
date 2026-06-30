@@ -11,6 +11,7 @@ import { App } from '../core/state.js';
 import { scene, sceneAnn, camera, controls, cameraAnn, controlsAnn } from '../core/scenes.js';
 import { showLoad, hideLoad } from '../core/loading.js';
 import { computeCurvature, applyCurvatureColors } from '../analysis/curvature.js';
+import { computeShapeIndex } from '../analysis/shapeIndex.js';
 import { computeQuality, updateQualityCard } from '../analysis/quality.js';
 import { computeMetrics, renderMetrics } from '../analysis/metrics.js';
 import { updateViewMode, updateClipping, clearOverlays } from './view-modes.js';
@@ -133,6 +134,12 @@ export function loadMainModel(files) {
       if (chkRS) { chkRS.checked = false; document.getElementById('rs-controls').style.display = 'none'; }
 
       App.curv=computeCurvature(geo);
+      // Shape Index is O(n) — compute immediately from k1/k2
+      const _si=computeShapeIndex(App.curv.k1, App.curv.k2);
+      App.curv.shapeIndex=_si.shapeIndex;
+      App.curv.classification=_si.classification;
+      App.curv.siCounts=_si.classificationCounts;
+      App.curv.siSummary=_si.summary;
       App.qual=computeQuality(geo);
       updateQualityCard();
       App.metrics=computeMetrics(geo);

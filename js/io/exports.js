@@ -137,7 +137,9 @@ document.getElementById('btn-export-report').addEventListener('click', () => {
     curvature: {
       mean: stats(App.curv.mean),
       gaussian: stats(App.curv.gaussian),
-      curvedness: stats(App.curv.curvedness)
+      curvedness: stats(App.curv.curvedness),
+      shape_index: stats(App.curv.shapeIndex),
+      shape_index_classification: App.curv.siCounts || null,
     },
     wall_thickness_units: App.curv.thickness ? stats(App.curv.thickness) : null,
     surface_roughness: Object.keys(roughnessMetrics).length ? roughnessMetrics : null,

@@ -38,6 +38,7 @@ import './features/annotations.js';
 import './features/compare.js';
 import './features/scripts.js';
 import './features/database.js';
+import './features/wall-thickness-ui.js';
 
 import './io/file-upload.js';
 import './io/figures.js';

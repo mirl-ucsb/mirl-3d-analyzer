@@ -13,6 +13,7 @@ import { showLoad, hideLoad } from '../core/loading.js';
 import { getMeshAdj } from './adjacency.js';
 import { getCmap, legendGradient } from './color-maps.js';
 import { Measure, Scale } from './measurement.js';
+import { computeSdrSdq } from './textureHybrid.js';
 
 export const Brush = { active: false, radius: 5, kRing: 2, selected: new Set(), overlay: null };
 
@@ -200,9 +201,38 @@ document.getElementById('btn-roughness-compute').addEventListener('click', () =>
     <div class="rrow"><span class="rkey">Sv: max valley</span><span class="rval">${fmt(Sv)}</span></div>
     <div class="rrow"><span class="rkey">Ssk: skewness</span><span class="rval">${Ssk.toFixed(3)}</span></div>
     <div class="rrow"><span class="rkey">Sku: kurtosis</span><span class="rval">${Sku.toFixed(3)}</span></div>`;
+
+  // Compute Sdr/Sdq on the same brushed region (converted to face indices)
+  try {
+    const selectedVerts = new Set(verts);
+    const geo = App.geo;
+    const idx = geo.index;
+    const nF = idx ? idx.count / 3 : geo.attributes.position.count / 3;
+    const brushedFaces = new Set();
+    for (let f = 0; f < nF; f++) {
+      const a = idx ? idx.getX(f*3) : f*3;
+      const b = idx ? idx.getX(f*3+1) : f*3+1;
+      const c = idx ? idx.getX(f*3+2) : f*3+2;
+      if (selectedVerts.has(a) || selectedVerts.has(b) || selectedVerts.has(c)) brushedFaces.add(f);
+    }
+    if (brushedFaces.size >= 3) {
+      const { Sdr, SdrPercent, Sdq, warnings: sdWarn } = computeSdrSdq(geo, brushedFaces);
+      const fmtDim = v => isNaN(v) ? 'N/A' : v.toExponential(3);
+      document.getElementById('roughness-inline').innerHTML +=
+        `<div style="margin-top:7px;padding-top:5px;border-top:1px solid var(--border)"></div>` +
+        `<div class="rrow"><span class="rkey">Sdr: developed area ratio</span><span class="rval">${fmtDim(SdrPercent)} %</span></div>` +
+        `<div class="rrow"><span class="rkey">Sdq: RMS gradient</span><span class="rval">${fmtDim(Sdq)}</span></div>`;
+      if (sdWarn.length) console.warn('Sdr/Sdq warnings:', sdWarn);
+      Brush.lastResults = { n, k, Sa, Sq, Sz, Sp, Sv, Ssk, Sku, Sdr: SdrPercent, Sdq, scale: sc, unit: u };
+    } else {
+      Brush.lastResults = { n, k, Sa, Sq, Sz, Sp, Sv, Ssk, Sku, scale: sc, unit: u };
+    }
+  } catch(e) {
+    console.error('Sdr/Sdq computation failed:', e);
+    Brush.lastResults = { n, k, Sa, Sq, Sz, Sp, Sv, Ssk, Sku, scale: sc, unit: u };
+  }
+
   document.getElementById('roughness-inline').style.display = '';
-  // Store last results for CSV export (io/exports.js reads these)
-  Brush.lastResults = { n, k, Sa, Sq, Sz, Sp, Sv, Ssk, Sku, scale: sc, unit: u };
   showLoad('Applying roughness colormap…');
   setTimeout(() => {
     const rough = fastRoughnessMap(App.geo);

@@ -8,8 +8,9 @@ import { App } from '../core/state.js';
 import { getCmap, legendGradient } from './color-maps.js';
 import { buildBaseColorAttr } from './radiance-scaling.js';
 import { Scale } from './measurement.js';
+import { SI_LABELS, SI_COLORMAP, classificationToColors } from './shapeIndex.js';
 
-const FIELD_LABELS = { mean: 'Mean Curvature', gaussian: 'Gaussian Curvature', curvedness: 'Curvedness', thickness: 'Wall Thickness' };
+const FIELD_LABELS = { mean: 'Mean Curvature', gaussian: 'Gaussian Curvature', curvedness: 'Curvedness', thickness: 'Wall Thickness', shapeIndex: 'Shape Index' };
 
 // Paint a per-vertex scalar field into the geometry's color attribute. No-hit
 // vertices (NaN, e.g. open boundaries in the thickness map) render neutral.
@@ -183,22 +184,70 @@ export function computeCurvature(geo) {
     for(let i=0;i<nC;i++) gauss[i]=Math.max(lo,Math.min(hi,gauss[i]));
   }
 
-  // ── Step 9: curvedness = sqrt((k1²+k2²)/2), k1,k2 = H±sqrt(H²−K) ───────
+  // ── Step 9: principal curvatures k1,k2 and curvedness ───────────────────
+  // k1 = H + sqrt(H²−K)  (max principal curvature, k1 ≥ k2)
+  // k2 = H − sqrt(H²−K)  (min principal curvature)
+  const k1c=new Float32Array(nC), k2c=new Float32Array(nC);
   for(let i=0;i<nC;i++){
     const H=mean[i], K=gauss[i];
     const disc=Math.max(H*H-K,0); const root=Math.sqrt(disc);
-    curv[i]=Math.sqrt(.5*((H+root)**2+(H-root)**2));
+    k1c[i]=H+root; k2c[i]=H-root;
+    curv[i]=Math.sqrt(.5*(k1c[i]**2+k2c[i]**2));
   }
 
   // ── Step 10: broadcast canonical values back to all (possibly duplicated) vertices ──
   const mean_out=new Float32Array(nV), gauss_out=new Float32Array(nV), curv_out=new Float32Array(nV);
+  const k1_out=new Float32Array(nV), k2_out=new Float32Array(nV);
   for(let i=0;i<nV;i++){
-    mean_out[i]=mean[canon[i]]; gauss_out[i]=gauss[canon[i]]; curv_out[i]=curv[canon[i]];
+    const ci=canon[i];
+    mean_out[i]=mean[ci]; gauss_out[i]=gauss[ci]; curv_out[i]=curv[ci];
+    k1_out[i]=k1c[ci]; k2_out[i]=k2c[ci];
   }
-  return {mean:mean_out, gaussian:gauss_out, curvedness:curv_out};
+  return {mean:mean_out, gaussian:gauss_out, curvedness:curv_out, k1:k1_out, k2:k2_out};
+}
+
+function _siClassLegend() {
+  const el = document.getElementById('si-class-legend-sidebar');
+  if (!el) return;
+  el.innerHTML = SI_LABELS.map((lbl, i) => {
+    const col = SI_COLORMAP[i];
+    return `<div style="display:flex;align-items:center;gap:6px;margin:2px 0">` +
+      `<span style="display:inline-block;width:14px;height:14px;background:${col};border-radius:2px;flex-shrink:0"></span>` +
+      `<span style="font-size:11px">${lbl}</span></div>`;
+  }).join('');
+  el.style.display = 'block';
+}
+
+function _hideSiClassLegend() {
+  const el = document.getElementById('si-class-legend-sidebar');
+  if (el) { el.style.display = 'none'; el.innerHTML = ''; }
 }
 
 export function applyColors(geo, mesh, curvMode, cmapName, clipLo, clipHi) {
+  // ── Classification mode: categorical colors, special legend ──
+  if (curvMode === 'classification') {
+    if (!App.curv || !App.curv.classification) {
+      document.getElementById('color-legend').classList.remove('visible');
+      _hideSiClassLegend();
+      return;
+    }
+    const cols = classificationToColors(App.curv.classification);
+    geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+    if (App.radianceScaling) {
+      geo.attributes.color.needsUpdate = true;
+    } else {
+      mesh.material.vertexColors = true;
+      mesh.material.color.set(0xffffff);
+      mesh.material.needsUpdate = true;
+    }
+    document.getElementById('color-legend').classList.remove('visible');
+    _siClassLegend();
+    return;
+  }
+
+  // All other modes: hide classification legend
+  _hideSiClassLegend();
+
   const data = curvMode !== 'none' ? App.curv[curvMode] : null;
 
   function percentiles() {
