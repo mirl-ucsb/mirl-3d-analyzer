@@ -10,7 +10,7 @@ import { buildBaseColorAttr } from './radiance-scaling.js';
 import { Scale } from './measurement.js';
 import { SI_LABELS, SI_COLORMAP, classificationToColors } from './shapeIndex.js';
 
-const FIELD_LABELS = { mean: 'Mean curvature', gaussian: 'Gaussian curvature', curvedness: 'Curvedness', thickness: 'Wall thickness', shapeIndex: 'Shape index' };
+const FIELD_LABELS = { mean: 'Mean curvature', gaussian: 'Gaussian curvature', curvedness: 'Curvedness', shapeIndex: 'Shape index' };
 
 // Paint a per-vertex scalar field into the geometry's color attribute. No-hit
 // vertices (NaN, e.g. open boundaries in the thickness map) render neutral.
@@ -25,11 +25,8 @@ function writeField(geo, data, cmap, lo, hi) {
   return geo.attributes.color;
 }
 
-// Thickness is a real length, so its legend reads in physical units when a
-// scale is set; curvature stays unitless.
 function updateLegend(mode, cmapName, lo, hi) {
-  let l = lo, h = hi, suf = '', dp = 4;
-  if (mode === 'thickness') { dp = 2; if (Scale.mmPerUnit) { l = lo * Scale.mmPerUnit; h = hi * Scale.mmPerUnit; suf = ' ' + Scale.unit; } }
+  const l = lo, h = hi, suf = '', dp = 4;
   document.getElementById('legend-title').textContent = FIELD_LABELS[mode] || '';
   document.getElementById('legend-bar').style.background = legendGradient(cmapName);
   document.getElementById('legend-min').textContent = l.toFixed(dp) + suf;

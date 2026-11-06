@@ -72,6 +72,7 @@ document.getElementById('chk-sync-cam').addEventListener('change',e=>{App.syncCa
 
 // ── Deviation map (right = test, left = reference) ──
 const fmtLen = u => Scale.mmPerUnit ? `${(u * Scale.mmPerUnit).toFixed(2)} ${Scale.unit}` : `${u.toFixed(4)} units`;
+const fmtVol = u => Scale.mmPerUnit ? `${(u * Scale.mmPerUnit ** 3).toFixed(2)} ${Scale.unit}³` : `${u.toFixed(4)} units³`;
 
 function applyDeviationColors(geo, mesh, dev, absMax) {
   const cmap = getCmap('coolwarm'), nV = dev.length, cols = new Float32Array(nV * 3);
@@ -145,7 +146,7 @@ document.getElementById('btn-cmp-deviation').addEventListener('click', () => {
   showLoad('Computing deviation…');
   setTimeout(() => {
     App.cmpMeshR.updateMatrixWorld(true);
-    const { dev, rms } = computeDeviation(App.cmpGeoR, App.cmpMeshR.matrixWorld, refGrid());
+    const { dev, rms, lossVolume, gainVolume, levelOfDetection, significantPercent } = computeDeviation(App.cmpGeoR, App.cmpMeshR.matrixWorld, refGrid());
     const absMax = robustAbsMax(dev);
     App.cmpDev = dev;
     applyDeviationColors(App.cmpGeoR, App.cmpMeshR, dev, absMax);
@@ -153,6 +154,11 @@ document.getElementById('btn-cmp-deviation').addEventListener('click', () => {
     document.getElementById('cmp-dev-lo').textContent = '-' + fmtLen(absMax);
     document.getElementById('cmp-dev-hi').textContent = '+' + fmtLen(absMax);
     document.getElementById('cmp-dev-rms').textContent = `RMS deviation: ${fmtLen(rms)}`;
+    document.getElementById('cmp-dev-stats').innerHTML =
+      `<div class="rrow"><span class="rkey">Detection limit (2×RMS)</span><span class="rval">${fmtLen(levelOfDetection)}</span></div>` +
+      `<div class="rrow"><span class="rkey">Changed beyond limit</span><span class="rval">${significantPercent.toFixed(1)}%</span></div>` +
+      `<div class="rrow"><span class="rkey">Material loss</span><span class="rval">${fmtVol(lossVolume)}</span></div>` +
+      `<div class="rrow"><span class="rkey">Material gain</span><span class="rval">${fmtVol(gainVolume)}</span></div>`;
     renderHistogram(dev, absMax);
     document.getElementById('cmp-dev-legend').style.display = '';
     document.getElementById('cmp-dev-status').textContent = '';

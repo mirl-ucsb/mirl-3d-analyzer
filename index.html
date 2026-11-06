@@ -215,11 +215,10 @@
               <button class="tb" data-curv="mean">Mean</button>
               <button class="tb" data-curv="gaussian">Gaussian</button>
               <button class="tb" data-curv="curvedness">Curvedness</button>
-              <button class="tb" data-curv="thickness">Thickness</button>
               <button class="tb" data-curv="shapeIndex">Shape Idx</button>
               <button class="tb" data-curv="classification">SI Class</button>
             </div>
-            <div class="note">Thickness maps the wall depth from each point to the opposite surface. Set a physical scale for real units. Open areas read neutral.</div>
+            <div class="note">Shape Index classifies each point from cup to saddle to cap; SI Class bins it into named surface types. Wall thickness has its own panel below.</div>
             <div id="si-class-legend-sidebar" style="display:none;margin-top:8px"></div>
           </div>
           <div class="cg">
@@ -518,6 +517,7 @@
             <div id="cmp-dev-bar" style="height:12px;border:1px solid var(--border)"></div>
             <div class="legend-labels" style="margin-top:3px"><span id="cmp-dev-lo">-</span><span>0</span><span id="cmp-dev-hi">+</span></div>
             <div class="rval" style="text-align:left;margin-top:6px" id="cmp-dev-rms">RMS deviation: –</div>
+            <div id="cmp-dev-stats" style="margin-top:4px"></div>
             <div class="sub-label">Distribution</div>
             <div id="cmp-dev-hist" style="margin-top:3px"></div>
             <div class="cg" style="margin-top:8px"><button class="btn btn-sm btn-block" id="btn-cmp-dev-csv">Deviation (CSV)</button></div>
@@ -708,7 +708,7 @@
   "imports": {
     "three": "./vendor/three/three.module.js",
     "three/addons/": "./vendor/three/addons/",
-    "three-mesh-bvh": "https://esm.sh/three-mesh-bvh@0.7.4?external=three"
+    "three-mesh-bvh": "./vendor/three-mesh-bvh/index.module.js"
   }
 }
 </script>

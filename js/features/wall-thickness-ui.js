@@ -49,6 +49,9 @@ document.getElementById('btn-wt-compute').addEventListener('click', () => {
     const { perVertexThickness, mean, median, stddev, cv, min, max,
             validVertexCount, coveragePercent } = result;
 
+    // Keep the field for the full-report export (stats over finite values).
+    if (App.curv) App.curv.thickness = perVertexThickness;
+
     const sc = Scale.mmPerUnit || 1;
     const u  = Scale.mmPerUnit ? Scale.unit : 'model units';
     const fmt = v => isNaN(v) ? 'N/A' : (v * sc).toExponential(3) + ' ' + u;

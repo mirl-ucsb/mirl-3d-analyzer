@@ -12,6 +12,7 @@
 // ══════════════════════════════════════════
 
 import * as THREE from 'three';
+import { computeVertexAreas } from './meshUtils.js';
 
 // ── Closest point on a triangle (Ericson, Real-Time Collision Detection) ──
 // Reads triangle a,b,c from the packed array `tri` at offset o; writes the
@@ -142,6 +143,9 @@ function nearest(g, px, py, pz, res) {
 }
 
 // ── Signed deviation of the test mesh against a reference grid ──
+// Returns the per-vertex field plus conservation summary stats: signed loss/gain
+// volumes (sum of |d| x vertex area, by sign), a level-of-detection threshold
+// (2 x RMS), and the share of surface that moved beyond it.
 export function computeDeviation(testGeo, testMatrix, grid) {
   const pos = testGeo.attributes.position, nV = pos.count;
   const dev = new Float32Array(nV);
@@ -157,7 +161,23 @@ export function computeDeviation(testGeo, testMatrix, grid) {
     dev[i] = s;
     sum2 += s * s; n++; if (s < min) min = s; if (s > max) max = s;
   }
-  return { dev, rms: n ? Math.sqrt(sum2 / n) : 0, min: isFinite(min) ? min : 0, max: isFinite(max) ? max : 0 };
+  const rms = n ? Math.sqrt(sum2 / n) : 0;
+  const lod = 2 * rms;
+  const areas = computeVertexAreas(testGeo);           // local-space areas; rigid alignment preserves them
+  let lossVolume = 0, gainVolume = 0, sig = 0;
+  for (let i = 0; i < nV; i++) {
+    const d = dev[i];
+    if (!isFinite(d)) continue;
+    if (d < 0) lossVolume += -d * areas[i]; else gainVolume += d * areas[i];
+    if (Math.abs(d) > lod) sig++;
+  }
+  return {
+    dev, rms,
+    min: isFinite(min) ? min : 0, max: isFinite(max) ? max : 0,
+    lossVolume, gainVolume,
+    levelOfDetection: lod,
+    significantPercent: n ? (sig / n) * 100 : 0,
+  };
 }
 
 // ── Symmetric eigensolver (cyclic Jacobi), any size; used 4x4 for Horn ──
