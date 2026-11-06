@@ -211,13 +211,13 @@ export function dbRender(filterText = '') {
   tbody.innerHTML = filtered.map((r, i) => `
     <tr>
       <td style="color:var(--text2)">${i + 1}</td>
-      <td><strong>${r.name || '–'}</strong></td>
+      <td style="white-space:nowrap"><strong>${r.name || '–'}</strong></td>
       <td style="white-space:nowrap">${r.scanDate || '–'}</td>
       <td>${r.scanner  ? `<span class="db-tag">${r.scanner}</span>`  : '–'}</td>
       <td>${r.material ? `<span class="db-tag">${r.material}</span>` : '–'}</td>
       <td>${r.researcher || '–'}</td>
       <td style="font-family:var(--mono);font-size:12.5px">${r.filename || '–'}</td>
-      <td style="max-width:220px;color:var(--text2)">${r.notes ? r.notes.slice(0, 100) + (r.notes.length > 100 ? '…' : '') : '–'}</td>
+      <td style="min-width:240px;max-width:320px;color:var(--text2)">${r.notes ? r.notes.slice(0, 100) + (r.notes.length > 100 ? '…' : '') : '–'}</td>
       <td style="white-space:nowrap;color:var(--text2);font-size:13.5px">${r.addedAt || '–'}</td>
       <td style="white-space:nowrap">
         ${sourceTag(r._source)}
