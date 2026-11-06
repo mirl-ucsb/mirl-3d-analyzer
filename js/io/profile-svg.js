@@ -13,7 +13,7 @@ import { Scale } from '../analysis/measurement.js';
 
 // Paper-and-ink palette, written literally: a standalone SVG can't read the
 // app's CSS custom properties.
-const PAPER = '#f4efe1', INK = '#211d12', INK2 = '#5e5747', RULE = '#bfb494', STAMP = '#8a2a17';
+const PAPER = '#fefaf0', INK = '#1d1b18', INK2 = '#4f4b44', RULE = '#d3cbb8', STAMP = '#2f49e0';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -156,12 +156,12 @@ function buildSVG(chains, bounds, meta) {
   const closedD = chains.filter(c => c.closed).map(ch => 'M' + ch.pts.map(p => `${X(p.u).toFixed(2)} ${Y(p.w).toFixed(2)}`).join(' L ') + ' Z').join(' ');
 
   const parts = [];
-  parts.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="'IBM Plex Mono','Plex Mono',ui-monospace,monospace">`);
+  parts.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="'Epilogue','Helvetica Neue',Arial,sans-serif">`);
   parts.push(`<rect width="${W}" height="${H}" fill="${PAPER}"/>`);
   parts.push(`<rect x="4" y="4" width="${W - 8}" height="${H - 8}" fill="none" stroke="${RULE}" stroke-width="1"/>`);
 
   // Title
-  parts.push(`<text x="${M}" y="${M - 6}" fill="${INK}" font-size="13" letter-spacing="2.5">${esc(meta.title)}</text>`);
+  parts.push(`<text x="${M}" y="${M - 6}" fill="${INK}" font-size="15" font-weight="600">${esc(meta.title)}</text>`);
 
   const axisX = X(0), spansAxis = umin <= 0 && umax >= 0;
   const sectionFill = closedD ? `<path d="${closedD}" fill="${INK}" fill-rule="evenodd" fill-opacity="0.92"/>` : '';
@@ -235,7 +235,7 @@ export function exportProfileSVG() {
   const meta = {
     name: App.fileName || 'model',
     axis, style, elevation,
-    title: style === 'half' ? 'PROFILE: SECTION + ELEVATION' : 'CROSS-SECTION PROFILE',
+    title: style === 'half' ? 'Profile: section and elevation' : 'Cross-section profile',
     unit: Scale.unit,
     unitPerMesh: Scale.mmPerUnit || 0,   // physical units per mesh unit (0 = unset)
     openNote: anyClosed ? '' : ' · open section'

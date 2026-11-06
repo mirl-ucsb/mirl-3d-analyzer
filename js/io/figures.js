@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  FIGURES — publication output
+//  FIGURES: publication output
 //  1) Composite a scale bar and an orientation triad onto the rendered frame,
 //     so a screenshot is publication-ready the moment a physical scale is set.
 //  2) Assemble a one-page specimen record (the object's record sheet) from the
@@ -15,7 +15,7 @@ import { Measure, Scale, fmtDist } from '../analysis/measurement.js';
 import { formatMetrics } from '../analysis/metrics.js';
 import { setGizmoVisibleForCapture } from '../viewer/gizmo.js';
 
-const INK = '#211d12', PAPER = '#f4efe1';
+const INK = '#1d1b18', PAPER = '#fefaf0';
 
 // Device pixels the renderer is drawing into, vs the CSS pixels on screen.
 const dpr = () => renderer.domElement.width / renderer.domElement.clientWidth;
@@ -53,7 +53,7 @@ function drawScaleBar(ctx, w, h) {
   const barPx = len * perPhys;
   const x = 26 * k, y = h - 30 * k;
   ctx.save();
-  ctx.fillStyle = 'rgba(244,239,225,0.82)';
+  ctx.fillStyle = 'rgba(254,250,240,0.86)';
   ctx.fillRect(x - 10 * k, y - 20 * k, barPx + 20 * k, 42 * k);
   ctx.strokeStyle = INK; ctx.fillStyle = INK;
   ctx.lineWidth = 2 * k;
@@ -62,7 +62,7 @@ function drawScaleBar(ctx, w, h) {
   ctx.moveTo(x, y - 6 * k); ctx.lineTo(x, y + 6 * k);
   ctx.moveTo(x + barPx, y - 6 * k); ctx.lineTo(x + barPx, y + 6 * k);
   ctx.stroke();
-  ctx.font = `${13 * k}px 'IBM Plex Mono','Plex Mono',monospace`;
+  ctx.font = `500 ${13 * k}px 'Epilogue','Helvetica Neue',Arial,sans-serif`;
   ctx.textBaseline = 'top'; ctx.textAlign = 'center';
   ctx.fillText(`${len} ${Scale.unit}`, x + barPx / 2, y + 9 * k);
   ctx.restore();
@@ -73,14 +73,14 @@ function drawAxisIndicator(ctx, w, h) {
   const cx = w - 56 * k, cy = 56 * k, L = 30 * k;
   const rot = new THREE.Matrix4().extractRotation(camera.matrixWorldInverse);
   const axes = [
-    { v: new THREE.Vector3(1, 0, 0), c: '#8a2a17', t: 'X' },
-    { v: new THREE.Vector3(0, 1, 0), c: '#2d4f6e', t: 'Y' },
-    { v: new THREE.Vector3(0, 0, 1), c: '#6b7a3a', t: 'Z' },
+    { v: new THREE.Vector3(1, 0, 0), c: '#c62f3a', t: 'X' },
+    { v: new THREE.Vector3(0, 1, 0), c: '#2f8a4c', t: 'Y' },
+    { v: new THREE.Vector3(0, 0, 1), c: '#2f49e0', t: 'Z' },
   ].map(a => ({ ...a, d: a.v.applyMatrix4(rot) }))
     .sort((p, q) => p.d.z - q.d.z);                      // draw back-to-front
   ctx.save();
   ctx.lineWidth = 2.2 * k;
-  ctx.font = `${12 * k}px 'IBM Plex Mono','Plex Mono',monospace`;
+  ctx.font = `600 ${12 * k}px 'Epilogue','Helvetica Neue',Arial,sans-serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (const a of axes) {
     const ex = cx + a.d.x * L, ey = cy - a.d.y * L;
@@ -131,7 +131,7 @@ function roughnessRows() {
 function buildSheet() {
   const q = App.qual, s = q?.dims;
   const phys = Scale.mmPerUnit;
-  const dimUnits = s ? `${s.x.toFixed(2)} × ${s.y.toFixed(2)} × ${s.z.toFixed(2)} mesh units` : '—';
+  const dimUnits = s ? `${s.x.toFixed(2)} × ${s.y.toFixed(2)} × ${s.z.toFixed(2)} mesh units` : '–';
   const dimPhys = s && phys ? `${(s.x * phys).toFixed(1)} × ${(s.y * phys).toFixed(1)} × ${(s.z * phys).toFixed(1)} ${Scale.unit}` : null;
   const name = (document.getElementById('sdb-name')?.value || '').trim() || App.fileName || 'Untitled specimen';
   const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -141,18 +141,18 @@ function buildSheet() {
 
   const fm = formatMetrics();
   const specimen = [
-    row('File', App.fileName || '—'),
-    row('Scan quality', q ? `${q.grade} · ${q.label} (${q.score}/100)` : '—'),
+    row('File', App.fileName || '–'),
+    row('Scan quality', q ? `${q.grade} · ${q.label} (${q.score}/100)` : '–'),
     row('Dimensions (bounding box)', dimUnits),
     dimPhys ? row('', dimPhys) : '',
     fm ? row('Oriented L × W × H', fm.oriented) : '',
     fm ? row('Surface area', fm.area) : '',
     fm ? row('Volume', fm.volume + (fm.watertight ? '' : ' (approx., open mesh)')) : '',
     row('Scale', phys ? `1 mesh unit = ${phys} ${Scale.unit}` : 'not set'),
-    row('Vertices', q ? q.nV.toLocaleString() : '—'),
-    row('Faces', q ? q.nF.toLocaleString() : '—'),
-    row('Uniformity', q ? (q.uniformity * 100).toFixed(1) + '%' : '—'),
-    row('Holes', q ? (q.holeCount === 0 ? 'None' : `${q.holeCount} (${q.boundaryEdges.toLocaleString()} boundary edges)`) : '—'),
+    row('Vertices', q ? q.nV.toLocaleString() : '–'),
+    row('Faces', q ? q.nF.toLocaleString() : '–'),
+    row('Uniformity', q ? (q.uniformity * 100).toFixed(1) + '%' : '–'),
+    row('Holes', q ? (q.holeCount === 0 ? 'None' : `${q.holeCount} (${q.boundaryEdges.toLocaleString()} boundary edges)`) : '–'),
   ].join('');
 
   const rough = roughnessRows();
@@ -175,16 +175,17 @@ function buildSheet() {
 
   return `
     <div class="sp-toolbar">
-      <button class="btn btn-sm btn-primary" id="sp-print">Print / Save PDF</button>
+      <button class="btn btn-sm btn-primary" id="sp-print">Print or save as PDF</button>
       <button class="btn btn-sm" id="sp-close">Close</button>
     </div>
     <div id="specimen-sheet">
       <header class="sp-head">
         <div>
-          <div class="sp-title">Specimen Record</div>
-          <div class="sp-sub">${esc(name)}</div>
+          <div class="sp-kind">Specimen record</div>
+          <div class="sp-title">${esc(name)}</div>
+          <div class="sp-sub">Recorded ${esc(date)}</div>
         </div>
-        <div class="sp-stamp">MIRL<span>Material / Image Research Lab</span></div>
+        <div class="sp-mark"><span class="bleed" aria-hidden="true"></span><b>MIRL</b><span>Material / Image Research Lab</span></div>
       </header>
       <img class="sp-fig" src="${img}" alt="Specimen view">
       <div class="sp-grid">

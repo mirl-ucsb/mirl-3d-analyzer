@@ -1,5 +1,5 @@
 #!/bin/bash
-# MIRL 3D Analyzer — double-click launcher
+# MIRL 3D Analyzer: double-click launcher
 # Starts the database server and web server, then opens the app in your browser.
 
 cd "$(dirname "$0")"
@@ -13,7 +13,7 @@ if [ -f "$CONFIG_FILE" ]; then
 else
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  MIRL 3D Analyzer — First-time setup"
+  echo "  MIRL 3D Analyzer: first-time setup"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
   echo "Where should the shared object database be stored?"

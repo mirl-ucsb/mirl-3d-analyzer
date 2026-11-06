@@ -12,7 +12,7 @@ Built at the [Material / Image Research Lab](https://mirl.arthistory.ucsb.edu)
 (MIRL), Department of History of Art and Architecture, University of California,
 Santa Barbara.
 
-![The Analyzer's main view: a scanned ceramic vessel on a sand ground, with the render and lighting controls down the left margin and a scan-quality note in the corner reporting an A grade, vertex and face counts, and dimensions](docs/img/viewer.png)
+![The Analyzer's main view: a scanned ceramic vessel on a sand ground, with the render and orientation controls down the left margin and a scan-quality note in the corner reporting an A grade, vertex and face counts, and dimensions](docs/img/viewer.png)
 
 It runs entirely on your own computer. There are no accounts, no fees, and
 nothing is uploaded: a scan you open stays on your machine. The tool is free and
@@ -106,7 +106,7 @@ spreadsheet at any time to back it up or share it with colleagues.
 
 ### Write your own analysis (optional)
 
-![The scripts view: a light worksheet with a built-in "Extreme Curvature" analysis in the editor and its result printed below, reporting the share of sharp vertices](docs/img/scripts.png)
+![The scripts view: a worksheet with the built-in "Extreme curvature" analysis in the editor and its result printed below, reporting the share of sharp vertices](docs/img/scripts.png)
 
 For those who want to go further, a small scripting console gives direct access
 to the object's geometry, with a handful of ready-made analyses (sharp-feature
@@ -152,9 +152,13 @@ The page detects the helper automatically when it is running.
 
 The Analyzer is plain HTML, CSS, and JavaScript with no build step, designed to
 run from any static host. See `docs/ARCHITECTURE.md` for the module map and
-`docs/DEVELOPMENT.md` for working notes. The interface follows the shared MIRL
-house style (Spectral and IBM Plex Mono, a paper ground, square corners), so it
-sits alongside the lab's other tools.
+`docs/DEVELOPMENT.md` for working notes. The design is the Material / Image
+Research Lab's own identity, shared with the lab site and every MIRL tool:
+Familjen Grotesk for names and headings, Epilogue for text, IBM Plex Mono for
+code and coordinates, the lab's paper white, and the Analyzer's key in the blue
+of the MIRL Risograph mark. The viewport keeps neutral grounds so a scan's own
+colour reads true. Every text colour meets WCAG AA. The typefaces are vendored in
+`fonts/` under the SIL Open Font License, with their licence texts.
 
 ## Credits
 
@@ -172,4 +176,6 @@ details are in [`CITATION.cff`](CITATION.cff).
 
 ## License
 
-Released under the MIT License (see [`LICENSE`](LICENSE)).
+Released under the MIT License (see [`LICENSE`](LICENSE)). Familjen Grotesk,
+Epilogue, IBM Plex Mono, and Noto Naskh Arabic are under the SIL Open Font
+License. A [`CHANGELOG`](CHANGELOG.md) records each release.

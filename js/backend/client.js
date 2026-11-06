@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  BACKEND INTEGRATION — Flask + PyVista service (optional, port 5000)
+//  BACKEND INTEGRATION: Flask + PyVista service (optional, port 5000)
 // ══════════════════════════════════════════
 
 import { App } from '../core/state.js';

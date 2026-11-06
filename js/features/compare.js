@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  COMPARE VIEW — side-by-side model viewers with synced cameras
+//  COMPARE VIEW: side-by-side model viewers with synced cameras
 // ══════════════════════════════════════════
 
 import * as THREE from 'three';

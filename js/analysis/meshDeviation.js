@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  MESH DEVIATION — signed closest-point distance between two scans
+//  MESH DEVIATION: signed closest-point distance between two scans
 //
 //  Compares an earlier reference scan (source) to a later scan (target)
 //  to detect surface change, material loss/gain, or deformation.
@@ -24,8 +24,8 @@ import { computeVertexAreas } from './meshUtils.js';
 /**
  * Compute per-vertex signed surface deviation between two mesh scans.
  *
- * @param {THREE.Mesh} sourceMesh — earlier / reference scan
- * @param {THREE.Mesh} targetMesh — later / comparison scan
+ * @param {THREE.Mesh} sourceMesh: earlier / reference scan
+ * @param {THREE.Mesh} targetMesh: later / comparison scan
  * @param {{
  *   signedDistance?: boolean, // sign by source normal (default: true)
  *   hausdorff?:      boolean, // symmetric Hausdorff distance (default: true; 2× slower)
@@ -34,15 +34,15 @@ import { computeVertexAreas } from './meshUtils.js';
  * @returns {{
  *   perVertexDistance:      Float32Array,
  *   rmsDeviation:           number,
- *   meanDeviation:          number,  — mean of |d_i|
- *   maxDeviation:           number,  — max |d_i| (one-sided Hausdorff, source→target)
- *   hausdorffDistance:      number,  — symmetric max(src→tgt, tgt→src)
- *   positiveVolume:         number,  — approx. volume of surface gain (geometry units³)
- *   negativeVolume:         number,  — approx. volume of surface loss
+ *   meanDeviation:          number,  mean of |d_i|
+ *   maxDeviation:           number,  max |d_i| (one-sided Hausdorff, source→target)
+ *   hausdorffDistance:      number,  symmetric max(src→tgt, tgt→src)
+ *   positiveVolume:         number,  approx. volume of surface gain (geometry units³)
+ *   negativeVolume:         number,  approx. volume of surface loss
  *   histogram:              { bins: number[], counts: number[], edges: number[] },
- *   levelOfDetection:       number,  — 2 × rmsDeviation (practical LoD threshold)
+ *   levelOfDetection:       number,  2 × rmsDeviation (practical LoD threshold)
  *   significantChangePercent: number,
- *   colorRange:             { min: number, max: number }, — for diverging colormap
+ *   colorRange:             { min: number, max: number }, for diverging colormap
  * }}
  */
 export function computeMeshDeviation(sourceMesh, targetMesh, options = {}) {

@@ -1,12 +1,12 @@
 """
-MIRL 3D Analyzer — Object Database Server (port 5005)
+MIRL 3D Analyzer: Object Database Server (port 5005)
 
 Provides cross-computer artifact storage so any browser on the same network
 can save and load 3D models.
 
 Storage:
   - artifact_db.sqlite  (metadata)
-  - db_files/           (raw model files — OBJ, STL, PLY)
+  - db_files/           (raw model files: OBJ, STL, PLY)
 
 Endpoints:
   GET  /status                → health + record count

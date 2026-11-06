@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  FILE UPLOAD — drag/drop + file input wiring for the main viewer and compare tabs
+//  FILE UPLOAD: drag/drop + file input wiring for the main viewer and compare tabs
 // ══════════════════════════════════════════
 
 import { loadMainModel } from '../viewer/loader.js';

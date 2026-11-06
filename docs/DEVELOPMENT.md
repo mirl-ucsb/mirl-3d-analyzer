@@ -14,7 +14,7 @@ npx http-server -p 8000
 Open <http://localhost:8000> in Chrome. Firefox should also work, but
 Three.js is primarily tested against Chromium.
 
-You **cannot** open `index.html` by double-click — ES modules require
+You **cannot** open `index.html` by double-click: ES modules require
 an HTTP origin, not `file://`.
 
 ## Three.js
@@ -36,7 +36,7 @@ Addons (OrbitControls, OBJLoader, MTLLoader, CSS2DRenderer) are imported from
 
 ## Backend
 
-Optional — provides higher-accuracy curvature via PyVista:
+Optional; it provides higher-accuracy curvature via PyVista:
 
 ```bash
 cd backend

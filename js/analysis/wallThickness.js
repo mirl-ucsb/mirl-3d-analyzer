@@ -1,12 +1,12 @@
 // ══════════════════════════════════════════
-//  WALL THICKNESS — Shape Diameter Function via cone-median ray-casting
+//  WALL THICKNESS: Shape Diameter Function via cone-median ray-casting
 //
 //  At each vertex, casts numRays rays inward within a cone of half-angle
 //  coneAngleDeg around the inverted vertex normal, then takes the MEDIAN
 //  of valid hit distances as the local wall thickness.
 //
 //  The median (vs. minimum or mean) suppresses noise from mesh irregularities,
-//  self-intersections, and surface holes — critical for thin ceramic walls.
+//  self-intersections, and surface holes: critical for thin ceramic walls.
 //
 //  Reference: Shapira et al. (2008), "Consistent mesh partitioning and
 //  skeletonisation using the shape diameter function." The Visual Computer.
@@ -25,21 +25,21 @@ import { computeVertexNormals } from './meshUtils.js';
 /**
  * Compute local wall thickness at each vertex via cone-median ray-casting.
  *
- * @param {THREE.Mesh} mesh — near-closed geometry (open meshes work but coverage drops)
+ * @param {THREE.Mesh} mesh: near-closed geometry (open meshes work but coverage drops)
  * @param {{
- *   numRays?:              number,  — rays per cone (default: 11; odd for clean median)
- *   coneAngleDeg?:         number,  — cone half-angle in degrees (default: 30)
- *   maxThickness?:         number,  — discard hits farther than this (default: Infinity)
- *   minThickness?:         number,  — discard hits closer than this; avoids self-hit (default: 0.001)
- *   onlyOppositeNormals?:  boolean, — only count hits where face normal opposes ray (default: true)
- *   subsample?:            number,  — compute every Nth vertex; gaps filled by nearest (default: 1)
+ *   numRays?:              number,  rays per cone (default: 11; odd for clean median)
+ *   coneAngleDeg?:         number,  cone half-angle in degrees (default: 30)
+ *   maxThickness?:         number,  discard hits farther than this (default: Infinity)
+ *   minThickness?:         number,  discard hits closer than this; avoids self-hit (default: 0.001)
+ *   onlyOppositeNormals?:  boolean, only count hits where face normal opposes ray (default: true)
+ *   subsample?:            number,  compute every Nth vertex; gaps filled by nearest (default: 1)
  * }} [options]
  * @returns {{
- *   perVertexThickness: Float32Array, — NaN where no reliable measurement
+ *   perVertexThickness: Float32Array, NaN where no reliable measurement
  *   mean:     number,
  *   median:   number,
  *   stddev:   number,
- *   cv:       number,  — coefficient of variation (stddev/mean); proxy for uniformity
+ *   cv:       number,  coefficient of variation (stddev/mean); proxy for uniformity
  *   min:      number,
  *   max:      number,
  *   histogram: { bins: number[], counts: number[], edges: number[] },

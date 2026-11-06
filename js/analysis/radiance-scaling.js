@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  RADIANCE SCALING — Vergne et al. 2010
+//  RADIANCE SCALING: Vergne et al. 2010
 //  Scales diffuse lighting per vertex by: max(0, 1 + strength * tanh(gamma * meanCurv))
 //  Convex regions brighten, concave regions dim relative to standard Phong.
 // ══════════════════════════════════════════

@@ -116,7 +116,7 @@ export function formatMetrics() {
 export function renderMetrics() {
   const f = formatMetrics();
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  if (!f) { set('mt-area', '—'); set('mt-vol', '—'); set('mt-oriented', '—'); set('mt-note', ''); return; }
+  if (!f) { set('mt-area', '–'); set('mt-vol', '–'); set('mt-oriented', '–'); set('mt-note', ''); return; }
   set('mt-area', f.area);
   set('mt-vol', f.volume + (f.watertight ? '' : ' *'));
   set('mt-oriented', f.oriented);

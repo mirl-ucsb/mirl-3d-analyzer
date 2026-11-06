@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  SCRIPTS / CODE RUNNER — sandboxed JS runner with built-in analyses
+//  SCRIPTS / CODE RUNNER: sandboxed JS runner with built-in analyses
 // ══════════════════════════════════════════
 
 import * as THREE from 'three';
@@ -8,7 +8,7 @@ import { getCmap, legendGradient } from '../analysis/color-maps.js';
 
 const SCRIPTS = {
   template: {
-    title:'Custom Script',
+    title:'Custom script',
     code:`// MIRL Script API
 // Available variables:
 //   positions  : Float32Array [x0,y0,z0, x1,y1,z1, ...]
@@ -31,7 +31,7 @@ colorFromValues(curvature.mean, 'turbo');
 `
   },
   extremes: {
-    title:'Extreme Curvature',
+    title:'Extreme curvature',
     code:`// Highlight vertices with |mean curvature| above threshold
 const threshold = 0.3;
 const r = new Float32Array(nVerts);
@@ -54,7 +54,7 @@ setColors(r, g, b);
 `
   },
   flat: {
-    title:'Flat Region Detection',
+    title:'Flat region detection',
     code:`// Color by local planarity (low curvedness = flat)
 const vals = curvature.curvedness;
 const sorted = [...vals].filter(isFinite).sort((a,b)=>a-b);
@@ -85,7 +85,7 @@ setColors(r, g, b_c);
 `
   },
   depth: {
-    title:'Depth Map (Z-axis)',
+    title:'Depth map (Z axis)',
     code:`// Color by vertex Z position (height map)
 const zVals = new Float32Array(nVerts);
 for (let i = 0; i < nVerts; i++) {
@@ -96,7 +96,7 @@ colorFromValues(zVals, 'viridis');
 `
   },
   normal: {
-    title:'Normal Deviation',
+    title:'Normal deviation',
     code:`// Color by deviation of vertex normal from up-vector (Y axis)
 const upY = new Float32Array(nVerts);
 for (let i = 0; i < nVerts; i++) {
@@ -108,7 +108,7 @@ colorFromValues(upY, 'coolwarm');
 `
   },
   boundary: {
-    title:'Boundary Proximity',
+    title:'Boundary proximity',
     code:`// Vertex face-degree: low degree → near mesh boundary.
 // Deduplicates positions first so non-indexed OBJ meshes work correctly.
 const pos = geometry.attributes.position;
@@ -173,7 +173,7 @@ export function updateScriptContext() {
       for(let i=0;i<nV;i++){const t=(vals[i]-lo)/range,[r,g,b]=cmap(t);cols[i*3]=r;cols[i*3+1]=g;cols[i*3+2]=b;}
       App.geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
       App.mesh.material.vertexColors=true;App.mesh.material.color.set(0xffffff);App.mesh.material.needsUpdate=true;
-      document.getElementById('legend-title').textContent='Custom Analysis';
+      document.getElementById('legend-title').textContent='Custom analysis';
       document.getElementById('legend-bar').style.background=legendGradient(cmapName);
       document.getElementById('legend-min').textContent=lo.toFixed(4);
       document.getElementById('legend-max').textContent=hi.toFixed(4);
@@ -208,8 +208,8 @@ document.getElementById('btn-run-script').addEventListener('click',()=>{
     fn(...Object.values(scriptContext));
   } catch(e) {
     out.textContent+='ERROR: '+e.message+'\n';
-    out.style.color='#f38ba8';
-    setTimeout(()=>out.style.color='#a6da95',2000);
+    out.style.color='var(--bad)';
+    setTimeout(()=>out.style.color='var(--ink)',2000);
   }
 });
 

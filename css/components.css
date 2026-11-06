@@ -1,139 +1,152 @@
-/* MIRL 3D Analyzer · components. Stamped-label buttons, underline inputs,
-   paper notes pinned to the mat. Square corners, ink hairlines throughout. */
+/* MIRL 3D Analyzer · components. Controls, buttons, fields, and the notes
+   that sit over the viewport. */
 
-/* ─── Controls (the margin apparatus) ─── */
-.cg { margin-bottom:13px; }
-.cg:last-child { margin-bottom:0; }
-.cl { font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); margin-bottom:6px; display:block; }
+/* ─── Controls ─── */
+.cg { margin-bottom: 15px; }
+.cg:last-child { margin-bottom: 0; }
+.cl { font-family: var(--sans); font-size: 13.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 7px; display: block; }
+.cl span { color: var(--ink); font-variant-numeric: tabular-nums; margin-left: 4px; }
 
-/* toggle groups: a row of small stamped labels */
-.tg { display:flex; flex-wrap:wrap; gap:5px; }
+/* toggle groups: a row of choices, the current one filled */
+.tg { display: flex; flex-wrap: wrap; gap: 6px; }
 .tb {
-  padding:5px 11px; border:1px solid var(--line-2); background:transparent;
-  color:var(--ink-2); font-family:var(--mono); font-size:11.5px;
-  text-transform:uppercase; letter-spacing:.06em; cursor:pointer; border-radius:0;
+  padding: 5px 10px; border: 1px solid var(--line-2); background: var(--surface);
+  color: var(--ink); font-family: var(--sans); font-size: 13.5px; font-weight: 500; line-height: 1.3;
+  cursor: pointer; border-radius: var(--radius);
 }
-.tb:hover { border-color:var(--ink); color:var(--ink); }
-.tb.active { background:var(--ink); border-color:var(--ink); color:var(--bg); }
+.tb:hover { border-color: var(--ink-3); background: var(--soft); }
+.tb.active { background: var(--key-ink); border-color: var(--key-ink); color: #fff; }
 
-.sr { display:flex; align-items:center; gap:9px; margin-top:4px; }
-.sr input[type=range] { flex:1; accent-color:var(--stamp); height:3px; }
-.sv { font-family:var(--mono); font-size:11px; color:var(--ink-2); min-width:36px; text-align:right; font-variant-numeric:tabular-nums; }
-.chk { display:flex; align-items:center; gap:9px; font-size:15px; color:var(--ink); cursor:pointer; padding:2px 0; }
-.chk input, input[type=checkbox] { accent-color:var(--stamp); width:15px; height:15px; }
+.sr { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.sr > span:first-child:not(.sv) { font-size: 13px; color: var(--ink-2); min-width: 20px; }
+.sr input[type=range] { flex: 1; accent-color: var(--key-ink); height: 3px; }
+.sv { font-family: var(--sans); font-size: 13.5px; color: var(--ink); min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+.chk { display: flex; align-items: center; gap: 9px; font-size: 14.5px; color: var(--ink); cursor: pointer; padding: 2px 0; }
+.chk input, input[type=checkbox] { accent-color: var(--key-ink); width: 16px; height: 16px; flex: none; }
 
-/* ─── Buttons: stamped labels ─── */
+/* ─── Buttons: one filled primary per section, outlined secondary ones ─── */
 .btn {
-  padding:8px 15px; border:1px solid var(--ink); background:transparent;
-  color:var(--ink); font-family:var(--mono); font-size:12.5px;
-  text-transform:uppercase; letter-spacing:.1em; cursor:pointer;
-  display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:0;
+  padding: 8px 14px; border: 1px solid var(--line-2); background: var(--surface);
+  color: var(--ink); font-family: var(--sans); font-size: 14.5px; font-weight: 500; line-height: 1.25;
+  cursor: pointer; border-radius: var(--radius); white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
-.btn:hover { background:var(--ink); border-color:var(--ink); color:var(--bg); }
-.btn-primary { background:var(--ink); color:var(--bg); border-color:var(--ink); }
-.btn-primary:hover { background:var(--stamp); border-color:var(--stamp); color:var(--bg); }
-.btn-sm { padding:6px 11px; font-size:11.5px; }
-.btn-block { width:100%; }
+.btn:hover { border-color: var(--ink-3); background: var(--soft); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn-primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-primary:hover { background: #3a362f; border-color: #3a362f; color: var(--bg); }
+.btn-sm { padding: 6px 11px; font-size: 14px; }
+.btn-block { width: 100%; white-space: normal; }
 
-/* underline-only fields (covers inline-styled inputs/selects too, since the
-   border alias resolves to a hairline and --radius is 0) */
-select, input[type=text], input[type=number], input[type=date], input[type=url], textarea {
-  font-family:var(--serif); font-size:16px; color:var(--ink);
-  background:transparent; border:0; border-bottom:1px solid var(--line-2);
-  border-radius:0 !important; padding:5px 2px; width:100%;
+/* fields: boxed, so their edges read on paper */
+select, input[type=text], input[type=number], input[type=date], input[type=url], input[type=search], textarea:not(#code-editor) {
+  font-family: var(--sans) !important; font-size: 14.5px !important; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line-2) !important;
+  border-radius: var(--radius) !important; padding: 6px 9px !important; width: 100%;
 }
-select { font-family:var(--mono); font-size:13px; cursor:pointer; }
-select:focus, input:focus, textarea:focus { outline:none; border-bottom:1.5px solid var(--stamp); }
-input::placeholder, textarea::placeholder { color:var(--ink-3); font-style:italic; }
-textarea { resize:vertical; line-height:1.55; }
-:focus-visible { outline:2px solid var(--stamp); outline-offset:2px; }
+select { cursor: pointer; }
+select:focus, input:focus, textarea:not(#code-editor):focus { outline: none; border-color: var(--key-ink) !important; box-shadow: 0 0 0 1px var(--key-ink); }
+input::placeholder, textarea::placeholder { color: var(--ink-3); }
+textarea { resize: vertical; line-height: 1.55; }
+:focus-visible { outline: 2px solid var(--key-ink); outline-offset: 2px; }
+button:focus:not(:focus-visible) { outline: none; }
 
-/* ─── Viewport: the mount ─── */
-.viewport { flex:1; position:relative; overflow:hidden; background:var(--mat); }
-.vp-canvas { width:100%; height:100%; display:block; }
+/* ─── Viewport: neutral ground for the specimen ─── */
+.viewport { flex: 1; position: relative; overflow: hidden; background: var(--mat); }
+.vp-canvas { width: 100%; height: 100%; display: block; }
 
-/* ─── Upload: mount this specimen ─── */
-.upload-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:5; background:var(--mat); }
-.upload-overlay.hidden { display:none; }
-.upload-box { text-align:center; padding:52px 72px; border:1px dashed var(--line-2); background:var(--bg); cursor:pointer; transition:border-color .2s, background .2s; }
-.upload-box:hover, .upload-box.dragover { border-color:var(--stamp); background:var(--surface); }
-.upload-icon { font-size:40px; color:var(--ink-2); margin-bottom:16px; }
-.upload-box h2 { font-family:var(--serif); font-size:22px; font-weight:600; margin-bottom:8px; color:var(--ink); }
-.upload-box p { font-size:14.5px; color:var(--ink-2); margin-bottom:18px; line-height:1.55; }
-.upload-box input[type=file] { display:none; }
+/* ─── Opening a scan ─── */
+.upload-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; background: var(--mat); padding: 24px; }
+.upload-overlay.hidden { display: none; }
+.upload-box { text-align: center; max-width: 480px; padding: 44px 52px 40px; border: 1.5px dashed var(--line-2); border-radius: 6px; background: var(--bg); cursor: pointer; transition: border-color .2s, background .2s; }
+.upload-box:hover, .upload-box.dragover { border-color: var(--key-ink); background: var(--surface); }
+.upload-icon { width: 44px; height: 44px; margin: 0 auto 16px; color: var(--key-ink); }
+.upload-icon svg { width: 100%; height: 100%; display: block; }
+.upload-box h2 { font-family: var(--display); font-size: 24px; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 8px; color: var(--ink); }
+.upload-box p { font-size: 15px; color: var(--ink-2); margin-bottom: 20px; line-height: 1.55; }
+.upload-box input[type=file] { display: none; }
 
 /* ─── Loading ─── */
-.loading-overlay { position:absolute; inset:0; background:rgba(244,239,225,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:6; }
-.loading-overlay.hidden { display:none; }
-.spinner { width:34px; height:34px; border:2px solid var(--line-2); border-top-color:var(--stamp); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:12px; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.loading-text { font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-2); }
+.loading-overlay { position: absolute; inset: 0; background: rgba(254, 250, 240, .9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 6; }
+.loading-overlay.hidden { display: none; }
+.spinner { width: 34px; height: 34px; border: 2.5px solid var(--line-2); border-top-color: var(--key); border-radius: 50%; animation: spin .8s linear infinite; margin-bottom: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: var(--sans); font-size: 14.5px; font-weight: 500; color: var(--ink-2); }
 
-/* a paper note pinned to the mat — shared chrome for the overlays */
+/* notes over the viewport: shared chrome */
 #quality-card, #color-legend, #info-bar, #measure-overlay {
-  background:var(--surface); border:1px solid var(--ink); border-radius:0;
-  box-shadow:4px 4px 0 rgba(33,29,18,.12); z-index:4;
+  background: rgba(255, 255, 255, .96); border: 1px solid var(--line-2); border-radius: 5px;
+  box-shadow: var(--shadow); z-index: 4;
 }
 
-/* ─── Quality card: the collation note ─── */
-#quality-card { position:absolute; top:16px; left:16px; padding:13px 16px; font-size:13px; min-width:184px; display:none; }
-#quality-card.visible { display:block; }
-.qc-score { display:flex; align-items:center; gap:11px; margin-bottom:10px; padding-bottom:9px; border-bottom:1px solid var(--line); }
-/* grade as a stamped mark */
-.qc-badge { font-family:var(--mono); font-size:20px; font-weight:500; padding:2px 11px; border:1.5px solid var(--ink); color:var(--ink); }
-.qc-badge.A { color:var(--blue); border-color:var(--blue); }
-.qc-badge.B { color:var(--yellow); border-color:var(--yellow); }
-.qc-badge.C { color:var(--stamp); border-color:var(--stamp); }
-.qc-label { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-2); }
-.qc-row { display:flex; justify-content:space-between; gap:16px; padding:3px 0; }
-.qc-key { font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3); }
-.qc-val { font-family:var(--mono); font-size:12.5px; color:var(--ink); font-variant-numeric:tabular-nums; }
+/* ─── Scan quality ─── */
+#quality-card { position: absolute; top: 16px; left: 16px; padding: 13px 16px 12px; font-size: 13.5px; min-width: 200px; display: none; }
+#quality-card.visible { display: block; }
+.qc-score { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+/* the grade as a tinted tag that names itself */
+.qc-badge { font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1; padding: 6px 11px; border-radius: var(--radius); color: var(--ink); background: var(--soft); }
+.qc-badge.A { color: var(--ok); background: var(--ok-bg); }
+.qc-badge.B { color: var(--warn); background: var(--warn-bg); }
+.qc-badge.C { color: var(--bad); background: var(--bad-bg); }
+.qc-label { font-family: var(--sans); font-size: 14px; font-weight: 600; color: var(--ink); }
+#qc-score-label { font-size: 13px; color: var(--ink-2); }
+.qc-row { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
+.qc-key { font-family: var(--sans); font-size: 13.5px; color: var(--ink-2); }
+.qc-val { font-family: var(--sans); font-size: 13.5px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-/* ─── Color legend: the printed scale bar ─── */
-#color-legend { position:absolute; right:16px; top:16px; padding:11px 15px; font-size:12px; min-width:158px; display:none; }
-#color-legend.visible { display:block; }
-.legend-title { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-2); margin-bottom:8px; }
-.legend-bar { height:12px; border:1px solid var(--ink); margin-bottom:5px; }
-.legend-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+/* ─── Colour legend: the printed scale bar ─── */
+#color-legend { position: absolute; right: 16px; top: 16px; padding: 11px 15px 10px; font-size: 13px; min-width: 176px; display: none; }
+#color-legend.visible { display: block; }
+.legend-title { font-family: var(--sans); font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.legend-bar { height: 12px; border: 1px solid var(--line-2); border-radius: 2px; margin-bottom: 5px; }
+.legend-labels { display: flex; justify-content: space-between; gap: 12px; font-family: var(--sans); font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 /* ─── Info bar ─── */
-#info-bar { position:absolute; bottom:16px; left:16px; padding:7px 13px; font-family:var(--mono); font-size:11.5px; color:var(--ink-2); display:none; }
-#info-bar.visible { display:flex; gap:16px; }
-#info-bar strong { color:var(--ink); font-weight:500; }
+#info-bar { position: absolute; bottom: 16px; left: 16px; padding: 7px 13px; font-family: var(--sans); font-size: 13px; color: var(--ink-2); display: none; max-width: calc(100% - 130px); }
+#info-bar.visible { display: flex; gap: 16px; }
+#info-bar strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+#info-bar div:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* ─── Annotation Modal ─── */
-#ann-modal { position:fixed; inset:0; background:rgba(33,29,18,.32); z-index:100; display:none; align-items:center; justify-content:center; }
-#ann-modal.open { display:flex; }
-.ann-modal-box { background:var(--surface); border:1px solid var(--ink); border-radius:0; padding:26px; width:380px; box-shadow:6px 6px 0 rgba(33,29,18,.16); }
-.ann-modal-box h3 { font-family:var(--serif); font-size:19px; font-weight:600; margin-bottom:16px; }
-.ann-modal-box label { font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); display:block; margin-bottom:5px; margin-top:12px; }
-.ann-modal-box input[type=text], .ann-modal-box textarea { width:100%; margin-bottom:4px; }
-.ann-modal-box textarea { min-height:80px; }
-.ann-modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
+/* ─── Annotation dialog ─── */
+#ann-modal { position: fixed; inset: 0; background: rgba(29, 27, 24, .32); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+#ann-modal.open { display: flex; }
+.ann-modal-box { background: var(--surface); border: 1px solid var(--line-2); border-radius: 6px; padding: 24px 26px 22px; width: 400px; max-width: 100%; box-shadow: 0 18px 48px rgba(29, 27, 24, .2); }
+.ann-modal-box h3 { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.ann-modal-box label { font-family: var(--sans); font-size: 13.5px; font-weight: 500; color: var(--ink-2); display: block; margin-bottom: 5px; margin-top: 14px; }
+.ann-modal-box input[type=text], .ann-modal-box textarea { width: 100%; margin-bottom: 2px; }
+.ann-modal-box textarea { min-height: 84px; }
+.ann-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
-/* ─── Annotation List ─── */
-.ann-item { background:var(--surface); border:1px solid var(--line); border-radius:0; padding:10px 12px; margin-bottom:8px; }
-.ann-item-title { font-family:var(--serif); font-weight:600; font-size:15px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
-.ann-item-note { font-size:14px; color:var(--ink-2); line-height:1.45; }
-.ann-item-coords { font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-top:5px; font-variant-numeric:tabular-nums; }
-.ann-del { background:none; border:none; color:var(--stamp); cursor:pointer; font-size:14px; padding:0 4px; }
+/* ─── Annotation list ─── */
+.ann-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px; }
+.ann-item-title { font-family: var(--sans); font-weight: 600; font-size: 14.5px; margin-bottom: 3px; display: flex; gap: 6px; align-items: center; }
+.ann-item-title .ann-del { margin-left: auto; }
+.ann-item-note { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+.ann-item-coords { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-top: 5px; font-variant-numeric: tabular-nums; }
+.ann-del { background: none; border: none; color: var(--ink-3); cursor: pointer; font-size: 14px; padding: 0 4px; }
+.ann-del:hover { color: var(--bad); }
 
-/* ─── CSS2D Labels: a pinned tag ─── */
-.ann-label { background:var(--surface); color:var(--ink); border:1px solid var(--ink); padding:3px 8px; border-radius:0; font-family:var(--mono); font-size:11px; white-space:nowrap; pointer-events:none; box-shadow:2px 2px 0 rgba(33,29,18,.2); }
+/* ─── Labels pinned in the 3D view ─── */
+.ann-label { background: var(--surface); color: var(--ink); border: 1px solid var(--line-2); padding: 3px 8px; border-radius: var(--radius); font-family: var(--sans); font-size: 12.5px; font-weight: 500; white-space: nowrap; pointer-events: none; box-shadow: 0 2px 6px rgba(29, 27, 24, .16); }
 
-/* ─── Measurement overlay ─── */
-#measure-overlay { position:absolute; bottom:54px; left:16px; padding:11px 15px; font-size:13px; display:none; min-width:220px; }
-#measure-overlay.visible { display:block; }
-.mrow { display:flex; justify-content:space-between; gap:22px; padding:3px 0; }
-.mrow+.mrow { border-top:1px solid var(--line); margin-top:3px; padding-top:3px; }
-.mkey { font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3); }
-.mval { font-family:var(--mono); font-weight:500; font-variant-numeric:tabular-nums; color:var(--ink); }
+/* ─── Measurement readout ─── */
+#measure-overlay { position: absolute; bottom: 58px; left: 16px; padding: 11px 15px; font-size: 13.5px; display: none; min-width: 230px; }
+#measure-overlay.visible { display: block; }
+.mrow { display: flex; justify-content: space-between; gap: 22px; padding: 3px 0; }
+.mrow+.mrow { border-top: 1px solid var(--line); margin-top: 3px; padding-top: 4px; }
+.mkey { font-family: var(--sans); font-size: 13.5px; color: var(--ink-2); }
+.mval { font-family: var(--sans); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
 
-/* ─── Roughness result ─── */
-.rrow { display:flex; justify-content:space-between; gap:16px; padding:3px 0; border-top:1px solid var(--line); margin-top:2px; padding-top:4px; }
-.rkey { font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3); }
-.rval { font-family:var(--mono); font-weight:500; font-variant-numeric:tabular-nums; color:var(--ink); }
+/* ─── Roughness and thickness results ─── */
+.result-head { font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+.rrow { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0 3px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.rkey { font-family: var(--sans); font-size: 13.5px; color: var(--ink-2); }
+.rval { font-family: var(--sans); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
 
 /* ─── Backend panel ─── */
-.backend-info { background:var(--surface); border:1px solid var(--blue); border-radius:0; padding:10px 12px; font-size:13.5px; color:var(--ink-2); margin-bottom:10px; line-height:1.5; }
-.backend-info.off { background:var(--bg); border-color:var(--line); color:var(--ink-3); }
+.backend-info { background: var(--surface); border: 1px solid var(--line-2); border-left: 3px solid var(--ok); border-radius: var(--radius); padding: 10px 12px; font-size: 14px; color: var(--ink-2); margin-bottom: 10px; line-height: 1.5; }
+.backend-info.off { background: var(--bg); border-left-color: var(--line-2); color: var(--ink-2); }
+
+/* tinted tags used in tables and results */
+.tag { display: inline-block; font-family: var(--sans); font-size: 12.5px; font-weight: 500; padding: 2px 8px; border-radius: var(--radius); color: var(--ink-2); background: var(--soft); white-space: nowrap; }
+.tag.server { color: var(--key-ink); background: var(--key-wash); }

@@ -1,5 +1,5 @@
 """
-MIRL 3D Analyzer — optional PyVista backend.
+MIRL 3D Analyzer: optional PyVista backend.
 
 Provides higher-accuracy curvature than the browser's in-JS discrete operator.
 The frontend at http://localhost:8000 polls /status and POSTs OBJ files to
@@ -94,7 +94,7 @@ def analyze():
 
 
 if __name__ == "__main__":
-    # Bind to localhost only — do not expose the analyzer to the network
+    # Bind to localhost only: do not expose the analyzer to the network
     # without reviewing the /analyze endpoint for abuse potential (it
     # parses arbitrary user-supplied OBJ payloads).
     app.run(host="127.0.0.1", port=5000, debug=False)

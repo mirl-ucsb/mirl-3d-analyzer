@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  UI EVENT HANDLERS — viewer sidebar controls + btn-new reset
+//  UI EVENT HANDLERS: viewer sidebar controls + btn-new reset
 //  (tabs, sidebar-collapse, screenshot/CSV are handled elsewhere)
 // ══════════════════════════════════════════
 
@@ -38,7 +38,7 @@ document.getElementById('bg-mode').addEventListener('click', e => {
 // ── Axes ──
 document.getElementById('chk-axes').addEventListener('change', e => { axesHelper.visible = e.target.checked; });
 
-// ── Reset View — recover framing if the camera gets lost ──
+// ── Reset View: recover framing if the camera gets lost ──
 document.getElementById('btn-view-reset').addEventListener('click', () => { controls.reset(); });
 
 // ── Lighting ──
@@ -101,7 +101,7 @@ document.getElementById('btn-ann-export').addEventListener('click', () => export
 document.getElementById('btn-ann-export2').addEventListener('click', () => exportAnnotations('json'));
 document.getElementById('btn-ann-export-csv').addEventListener('click', () => exportAnnotations('csv'));
 
-// ── New File — full reset ──
+// ── New File: full reset ──
 document.getElementById('btn-new').addEventListener('click', () => {
   detachGizmo();
   resetRaking();
@@ -127,7 +127,7 @@ document.getElementById('btn-new').addEventListener('click', () => {
   document.getElementById('sdb-name').value = '';
   document.getElementById('sdb-notes').value = '';
   document.getElementById('sdb-status').style.display = 'none';
-  document.getElementById('btn-sdb-save').textContent = 'Save to Database';
+  document.getElementById('btn-sdb-save').textContent = 'Save to the database';
   document.getElementById('btn-sdb-save').disabled = false;
   // Reset radiance scaling
   App.radianceScaling = false;
@@ -151,11 +151,11 @@ document.getElementById('btn-ann-mode').addEventListener('click', () => {
   App.annotationMode = !App.annotationMode;
   const btn = document.getElementById('btn-ann-mode');
   if (App.annotationMode) {
-    btn.textContent = '✓ Annotation Mode Active';
+    btn.textContent = '✓ Annotating: click the surface';
     btn.classList.add('btn-primary');
     rendererAnn.domElement.style.cursor = 'crosshair';
   } else {
-    btn.textContent = 'Enable Annotation Mode';
+    btn.textContent = 'Turn on annotation mode';
     btn.classList.remove('btn-primary');
     rendererAnn.domElement.style.cursor = '';
   }

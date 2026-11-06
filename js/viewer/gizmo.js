@@ -28,7 +28,7 @@ tc.addEventListener('objectChange', () => syncOverlayTransform());
 function setToggleLabel(on) {
   const btn = document.getElementById('btn-gizmo-toggle');
   if (!btn) return;
-  btn.textContent = on ? '✓ Orient / Move Active' : 'Enable Orient / Move';
+  btn.textContent = on ? '✓ Handles on: drag X, Y, or Z' : 'Show orient and move handles';
   btn.classList.toggle('btn-primary', on);
 }
 

@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  COLOR MAPS — turbo, viridis, coolwarm, gray + legend gradient
+//  COLOR MAPS: turbo, viridis, coolwarm, gray + legend gradient
 // ══════════════════════════════════════════
 
 export function turbo(t) {

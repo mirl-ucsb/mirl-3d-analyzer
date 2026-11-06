@@ -73,5 +73,5 @@ A few helpers must live on `window` because they're invoked from inline
   but prefer going through `core/state.js` for shared data.
 - Circular imports are permitted between `analysis/measurement.js` and
   `analysis/surface-texture.js` (they mutually deactivate each other via
-  event handlers — all references are inside callback bodies, not module
+  event handlers; all references are inside callback bodies, not module
   top-level).

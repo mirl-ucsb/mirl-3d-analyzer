@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  SURFACE TEXTURE — ISO 25178 Sdr and Sdq on brushed regions
+//  SURFACE TEXTURE: ISO 25178 Sdr and Sdq on brushed regions
 //
 //  Sdr (Developed Interfacial Area Ratio, ISO 25178-2 §4.3.2):
 //    Sdr = (A_true − A_projected) / A_projected
@@ -25,13 +25,13 @@ import { computePCAPlane, convexHull2D, polygonArea2D } from './meshUtils.js';
  * Projected area uses the 2D convex hull of those vertices on the fitted plane.
  *
  * @param {THREE.BufferGeometry} geometry
- * @param {Set<number>|number[]} selectedFaceIndices — face indices in the brushed region
+ * @param {Set<number>|number[]} selectedFaceIndices: face indices in the brushed region
  * @returns {{
- *   Sdr: number,        — developed interfacial area ratio (dimensionless)
- *   SdrPercent: number, — Sdr × 100 (ISO 25178 percentage form)
- *   Sdq: number,        — RMS surface gradient (dimensionless; equals tan of RMS slope)
- *   trueArea: number,   — 3D area of selected triangles (geometry units²)
- *   projectedArea: number, — convex-hull area on mean plane (geometry units²)
+ *   Sdr: number,        developed interfacial area ratio (dimensionless)
+ *   SdrPercent: number, Sdr × 100 (ISO 25178 percentage form)
+ *   Sdq: number,        RMS surface gradient (dimensionless; equals tan of RMS slope)
+ *   trueArea: number,   3D area of selected triangles (geometry units²)
+ *   projectedArea: number, convex-hull area on mean plane (geometry units²)
  *   faceCount: number,
  *   warnings: string[],
  * }}
@@ -105,7 +105,7 @@ export function computeSdrSdq(geometry, selectedFaceIndices) {
     const cosTheta = Math.abs(faceNormal.dot(planeNormal)); // cos of angle to mean plane
 
     if (cosTheta < 1e-6) {
-      // Face nearly perpendicular to mean plane — gradient → ∞; skip this face.
+      // Face nearly perpendicular to mean plane: gradient → ∞; skip this face.
       skippedFaces++;
       continue;
     }

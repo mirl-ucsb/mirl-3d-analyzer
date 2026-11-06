@@ -1,8 +1,8 @@
 // ══════════════════════════════════════════
 //  OBJECT DATABASE
 //  Two-tier storage:
-//    Primary  — remote server at SERVER_URL (shared across computers)
-//    Fallback — IndexedDB ('mirl_obj_files') + localStorage ('mirl_artifact_db')
+//    Primary: remote server at SERVER_URL (shared across computers)
+//    Fallback: IndexedDB ('mirl_obj_files') + localStorage ('mirl_artifact_db')
 //
 //  Window-attached handlers (dbAnalyze / dbAnalyzeUpload / dbDelete) are
 //  called from inline onclick= in dynamically rendered table rows.
@@ -27,7 +27,7 @@ function updateServerBadge(online) {
   const badge = document.getElementById('db-server-badge');
   if (!badge) return;
   badge.textContent = online ? 'Server online' : 'Server offline';
-  badge.style.color  = online ? 'var(--green, #4caf50)' : 'var(--text2)';
+  badge.style.color  = online ? 'var(--ok)' : 'var(--text2)';
   badge.title = online ? `Connected to ${SERVER_URL}` : `Cannot reach ${SERVER_URL}`;
 }
 
@@ -84,10 +84,10 @@ document.getElementById('btn-db-server-connect').addEventListener('click', async
 
   if (serverOnline) {
     msgEl.textContent = `Connected to ${SERVER_URL}`;
-    msgEl.style.color = 'var(--green, #4caf50)';
+    msgEl.style.color = 'var(--ok)';
   } else {
     msgEl.textContent = `Could not reach ${SERVER_URL}`;
-    msgEl.style.color = 'var(--yellow, #f0a500)';
+    msgEl.style.color = 'var(--warn)';
   }
 });
 
@@ -204,26 +204,26 @@ export function dbRender(filterText = '') {
 
   const sourceTag = src =>
     src === 'server'
-      ? '<span class="db-tag" style="background:#1a3550;color:#7eb8f7;font-size:10px">SERVER</span>'
-      : '<span class="db-tag" style="background:#2a2a2a;color:#aaa;font-size:10px">LOCAL</span>';
+      ? '<span class="tag server">Server</span>'
+      : '<span class="tag">Local</span>';
 
   const tbody = document.getElementById('db-tbody');
   tbody.innerHTML = filtered.map((r, i) => `
     <tr>
       <td style="color:var(--text2)">${i + 1}</td>
-      <td><strong>${r.name || '—'}</strong></td>
-      <td style="white-space:nowrap">${r.scanDate || '—'}</td>
-      <td>${r.scanner  ? `<span class="db-tag">${r.scanner}</span>`  : '—'}</td>
-      <td>${r.material ? `<span class="db-tag">${r.material}</span>` : '—'}</td>
-      <td>${r.researcher || '—'}</td>
-      <td style="font-family:monospace;font-size:11px">${r.filename || '—'}</td>
-      <td style="max-width:220px;color:var(--text2)">${r.notes ? r.notes.slice(0, 100) + (r.notes.length > 100 ? '…' : '') : '—'}</td>
-      <td style="white-space:nowrap;color:var(--text2);font-size:11px">${r.addedAt || '—'}</td>
+      <td><strong>${r.name || '–'}</strong></td>
+      <td style="white-space:nowrap">${r.scanDate || '–'}</td>
+      <td>${r.scanner  ? `<span class="db-tag">${r.scanner}</span>`  : '–'}</td>
+      <td>${r.material ? `<span class="db-tag">${r.material}</span>` : '–'}</td>
+      <td>${r.researcher || '–'}</td>
+      <td style="font-family:var(--mono);font-size:12.5px">${r.filename || '–'}</td>
+      <td style="max-width:220px;color:var(--text2)">${r.notes ? r.notes.slice(0, 100) + (r.notes.length > 100 ? '…' : '') : '–'}</td>
+      <td style="white-space:nowrap;color:var(--text2);font-size:13.5px">${r.addedAt || '–'}</td>
       <td style="white-space:nowrap">
         ${sourceTag(r._source)}
         ${r.hasFile
-          ? `<button class="btn btn-sm btn-primary" style="font-size:11px;padding:4px 9px;margin-left:4px" onclick="dbAnalyze('${r.id}','${r._source}')">▶ Analyze</button>`
-          : `<button class="btn btn-sm" style="font-size:11px;padding:4px 9px;margin-left:4px" onclick="dbAnalyzeUpload('${r.id}')" title="File not stored: pick it manually">Upload &amp; Analyze</button>`}
+          ? `<button class="btn btn-sm btn-primary" style="margin-left:4px" onclick="dbAnalyze('${r.id}','${r._source}')">Analyze</button>`
+          : `<button class="btn btn-sm" style="margin-left:4px" onclick="dbAnalyzeUpload('${r.id}')" title="File not stored: pick it manually">Open and analyze</button>`}
       </td>
       <td><button class="db-del-btn" onclick="dbDelete('${r.id}','${r._source}')">✕</button></td>
     </tr>`).join('');
@@ -241,7 +241,7 @@ window.dbDelete = async function (id, source) {
         method: 'DELETE', signal: AbortSignal.timeout(5000),
       });
       _serverRecords = _serverRecords.filter(r => r.id !== id);
-    } catch { /* server delete failed — still clean up locally */ }
+    } catch { /* server delete failed: still clean up locally */ }
   }
 
   const records = dbLoad().filter(r => r.id !== id);
@@ -337,7 +337,7 @@ export function showSaveDbSection(filename) {
   document.getElementById('sdb-name').value    = stem;
   document.getElementById('sdb-date').value    = new Date().toISOString().slice(0, 10);
   document.getElementById('sdb-status').style.display = 'none';
-  document.getElementById('btn-sdb-save').textContent = 'Save to Database';
+  document.getElementById('btn-sdb-save').textContent = 'Save to the database';
   document.getElementById('btn-sdb-save').disabled    = false;
 }
 
@@ -368,7 +368,7 @@ document.getElementById('btn-sdb-save').addEventListener('click', async () => {
   const st  = document.getElementById('sdb-status');
   const btn = document.getElementById('btn-sdb-save');
 
-  // 1 — try server upload (file + metadata)
+  // 1: try server upload (file + metadata)
   if (serverOnline && App.pendingOBJFile) {
     btn.textContent = 'Uploading to server…';
     btn.disabled    = true;
@@ -384,11 +384,11 @@ document.getElementById('btn-sdb-save').addEventListener('click', async () => {
       dbRender();
       return;
     }
-    btn.textContent = 'Save to Database';
+    btn.textContent = 'Save to the database';
     btn.disabled    = false;
   }
 
-  // 2 — fallback: local storage
+  // 2: fallback: local storage
   if (App.pendingOBJFile) {
     try {
       await FilesDB.save(id, App.pendingOBJFile.name, App.pendingOBJFile.arrayBuffer);
@@ -439,10 +439,10 @@ export function prefillSaveSection(record) {
   document.getElementById('sdb-material').value   = record.material   || '';
   document.getElementById('sdb-researcher').value = record.researcher || '';
   document.getElementById('sdb-notes').value      = record.notes      || '';
-  document.getElementById('btn-sdb-save').textContent = 'Already in Database';
+  document.getElementById('btn-sdb-save').textContent = 'Already in the database';
   document.getElementById('btn-sdb-save').disabled    = true;
   const st = document.getElementById('sdb-status');
-  st.textContent   = 'Loaded from Object Database';
+  st.textContent   = 'Opened from the object database';
   st.style.color   = 'var(--text2)';
   st.style.display = '';
 }
@@ -474,7 +474,7 @@ window.dbAnalyze = async function (id, source) {
   const record = dbLoad().find(r => r.id === id) || serverRecord;
   if (!record) return;
   const fileData = await FilesDB.get(id).catch(() => null);
-  if (!fileData) { alert('Stored file not found. Use "Upload & Analyze" instead.'); return; }
+  if (!fileData) { alert('Stored file not found. Use "Open and analyze" instead.'); return; }
 
   switchToViewer();
   const blob = new Blob([fileData.data], { type: 'text/plain' });

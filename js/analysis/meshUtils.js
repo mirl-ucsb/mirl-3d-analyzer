@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  MESH UTILITIES — shared geometric primitives used by analysis modules
+//  MESH UTILITIES: shared geometric primitives used by analysis modules
 //  All functions handle non-indexed (OBJ-style) geometry via canonical vertex maps.
 // ══════════════════════════════════════════
 
@@ -41,7 +41,7 @@ export function computeVertexNormals(geometry) {
     const ax = pos.getX(ai), ay = pos.getY(ai), az = pos.getZ(ai);
     const bx = pos.getX(bi), by = pos.getY(bi), bz = pos.getZ(bi);
     const cx = pos.getX(ci), cy = pos.getY(ci), cz = pos.getZ(ci);
-    // Cross product AB × AC — magnitude is 2*faceArea, direction is face normal
+    // Cross product AB × AC: magnitude is 2*faceArea, direction is face normal
     const abx = bx-ax, aby = by-ay, abz = bz-az;
     const acx = cx-ax, acy = cy-ay, acz = cz-az;
     const nx = aby*acz - abz*acy;
@@ -133,7 +133,7 @@ export function computePCAPlane(points) {
   return { normal, centroid, u, v };
 }
 
-// 3×3 symmetric Jacobi eigensolver — converges in <10 iterations for typical covariance matrices
+// 3×3 symmetric Jacobi eigensolver: converges in <10 iterations for typical covariance matrices
 function _jacobi3(M) {
   const a = M.map(r => [...r]);
   const V = [[1,0,0],[0,1,0],[0,0,1]];
@@ -201,7 +201,7 @@ export function convexHull2D(points) {
 
 /**
  * Signed area of a 2D polygon via the shoelace formula.
- * @param {{ x: number, y: number }[]} hull — ordered vertices
+ * @param {{ x: number, y: number }[]} hull: ordered vertices
  * @returns {number}
  */
 export function polygonArea2D(hull) {

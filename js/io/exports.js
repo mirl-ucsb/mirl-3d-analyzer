@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  EXPORTS — screenshots, CSV/JSON output, full report
+//  EXPORTS: screenshots, CSV/JSON output, full report
 //  Consolidated handlers for everything under "Export" in the viewer
 //  sidebar plus the header Screenshot button.
 // ══════════════════════════════════════════
@@ -72,7 +72,7 @@ document.getElementById('btn-export-measurements').addEventListener('click', () 
 // ── Annotations CSV (duplicate convenience button in viewer tab) ──
 document.getElementById('btn-ann-export-viewer-csv').addEventListener('click', () => exportAnnotations('csv'));
 
-// ── Full report JSON — everything bundled ──
+// ── Full report JSON: everything bundled ──
 document.getElementById('btn-export-report').addEventListener('click', () => {
   if (!App.geo) { alert('Load a model first.'); return; }
   const q = App.qual;
@@ -91,12 +91,12 @@ document.getElementById('btn-export-report').addEventListener('click', () => {
     };
   }
 
-  // Roughness — read from DOM (already computed & stored there)
+  // Roughness: read from DOM (already computed & stored there)
   const roughnessEl = document.getElementById('roughness-inline');
   const roughnessMetrics = {};
   if (roughnessEl && roughnessEl.style.display !== 'none') {
     roughnessEl.querySelectorAll('.rrow').forEach(row => {
-      const k = row.querySelector('.rkey')?.textContent?.replace(/[:—].*$/, '').trim();
+      const k = row.querySelector('.rkey')?.textContent?.replace(/[:\u2014].*$/, '').trim();
       const v = row.querySelector('.rval')?.textContent?.trim();
       if (k) roughnessMetrics[k] = v;
     });

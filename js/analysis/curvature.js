@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  CURVATURE — mean / Gaussian / curvedness at each vertex
+//  CURVATURE: mean / Gaussian / curvedness at each vertex
 //  + applyColors / applyCurvatureColors
 // ══════════════════════════════════════════
 
@@ -10,7 +10,7 @@ import { buildBaseColorAttr } from './radiance-scaling.js';
 import { Scale } from './measurement.js';
 import { SI_LABELS, SI_COLORMAP, classificationToColors } from './shapeIndex.js';
 
-const FIELD_LABELS = { mean: 'Mean Curvature', gaussian: 'Gaussian Curvature', curvedness: 'Curvedness', thickness: 'Wall Thickness', shapeIndex: 'Shape Index' };
+const FIELD_LABELS = { mean: 'Mean curvature', gaussian: 'Gaussian curvature', curvedness: 'Curvedness', thickness: 'Wall thickness', shapeIndex: 'Shape index' };
 
 // Paint a per-vertex scalar field into the geometry's color attribute. No-hit
 // vertices (NaN, e.g. open boundaries in the thickness map) render neutral.
@@ -213,7 +213,7 @@ function _siClassLegend() {
     const col = SI_COLORMAP[i];
     return `<div style="display:flex;align-items:center;gap:6px;margin:2px 0">` +
       `<span style="display:inline-block;width:14px;height:14px;background:${col};border-radius:2px;flex-shrink:0"></span>` +
-      `<span style="font-size:11px">${lbl}</span></div>`;
+      `<span style="font-size:13px;color:var(--ink-2)">${lbl}</span></div>`;
   }).join('');
   el.style.display = 'block';
 }

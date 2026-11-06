@@ -1,11 +1,11 @@
 // ══════════════════════════════════════════
-//  MESH ADJACENCY — cached per-geometry vertex→(neighbor, edge-weight) list
+//  MESH ADJACENCY: cached per-geometry vertex→(neighbor, edge-weight) list
 //  + MinHeap + Dijkstra geodesic for measurement tool
 //
 //  Returns { adj, canon, canonOrig } where:
-//    adj[ci]      — Array of [cj, weight] for canonical vertex ci
-//    canon[i]     — compact canonical index (0..nC-1) for original vertex i
-//    canonOrig[ci]— one original vertex index for canonical vertex ci
+//    adj[ci]: Array of [cj, weight] for canonical vertex ci
+//    canon[i]: compact canonical index (0..nC-1) for original vertex i
+//    canonOrig[ci]:  one original vertex index for canonical vertex ci
 //  Callers that need original-index semantics should map via canon[i].
 // ══════════════════════════════════════════
 

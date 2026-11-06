@@ -93,9 +93,9 @@ function turntable() {
 const NS = 'http://www.w3.org/2000/svg';
 const CUBE_C = 39, CUBE_L = 25;
 const AXES = [
-  { key: 'x', view: 'right', col: '#8a2a17', label: 'X', v: new THREE.Vector3(1, 0, 0) },
-  { key: 'y', view: 'top',   col: '#2d4f6e', label: 'Y', v: new THREE.Vector3(0, 1, 0) },
-  { key: 'z', view: 'front', col: '#6b7a3a', label: 'Z', v: new THREE.Vector3(0, 0, 1) },
+  { key: 'x', view: 'right', col: '#c62f3a', label: 'X', v: new THREE.Vector3(1, 0, 0) },
+  { key: 'y', view: 'top',   col: '#2f8a4c', label: 'Y', v: new THREE.Vector3(0, 1, 0) },
+  { key: 'z', view: 'front', col: '#2f49e0', label: 'Z', v: new THREE.Vector3(0, 0, 1) },
 ];
 
 function buildCube() {
@@ -107,8 +107,8 @@ function buildCube() {
   svg.style.cssText = 'position:absolute;right:14px;bottom:14px;width:78px;height:78px;pointer-events:none;z-index:5';
   const bg = document.createElementNS(NS, 'circle');
   bg.setAttribute('cx', '39'); bg.setAttribute('cy', '39'); bg.setAttribute('r', '37');
-  bg.setAttribute('fill', '#fcf9ef'); bg.setAttribute('fill-opacity', '0.72');
-  bg.setAttribute('stroke', '#bfb494'); bg.setAttribute('stroke-width', '1');
+  bg.setAttribute('fill', '#ffffff'); bg.setAttribute('fill-opacity', '0.8');
+  bg.setAttribute('stroke', '#d3cbb8'); bg.setAttribute('stroke-width', '1');
   svg.appendChild(bg);
   for (const a of AXES) {
     a.line = document.createElementNS(NS, 'line');
@@ -119,8 +119,8 @@ function buildCube() {
     a.dot.style.cssText = 'pointer-events:auto;cursor:pointer';
     a.dot.addEventListener('click', () => setView(a.view));
     a.txt = document.createElementNS(NS, 'text');
-    a.txt.setAttribute('fill', '#fcf9ef'); a.txt.setAttribute('font-size', '9');
-    a.txt.setAttribute('font-family', "'IBM Plex Mono','Plex Mono',monospace");
+    a.txt.setAttribute('fill', '#ffffff'); a.txt.setAttribute('font-size', '9.5'); a.txt.setAttribute('font-weight', '600');
+    a.txt.setAttribute('font-family', "'Epilogue','Helvetica Neue',Arial,sans-serif");
     a.txt.setAttribute('text-anchor', 'middle'); a.txt.setAttribute('dominant-baseline', 'central');
     a.txt.style.pointerEvents = 'none'; a.txt.textContent = a.label;
     svg.append(a.line, a.dot, a.txt);

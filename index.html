@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIRL 3D Artifact Analyzer · UC Santa Barbara</title>
+<title>MIRL 3D Artifact Analyzer · a workbench for 3D scans of cultural objects</title>
 
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
@@ -13,38 +13,38 @@
 <style id="file-protocol-warning-style">
   #file-protocol-warning {
     position: fixed; inset: 0; z-index: 10000;
-    background: #e9e3d0; color: #211d12;
+    background: #f1ecdf; color: #1d1b18;
     display: flex; align-items: center; justify-content: center;
-    font-family: "Spectral", Georgia, serif;
+    font-family: "Epilogue", "Helvetica Neue", Arial, sans-serif;
     padding: 40px;
   }
   #file-protocol-warning .fpw-box {
     max-width: 640px;
-    background: #fcf9ef; color: #211d12;
-    border: 1px solid #211d12;
-    border-radius: 0;
+    background: #ffffff; color: #1d1b18;
+    border: 1px solid #d3cbb8;
+    border-radius: 6px;
     padding: 32px 36px;
-    box-shadow: 6px 6px 0 rgba(33,29,18,.16);
+    box-shadow: 0 18px 48px rgba(29,27,24,.2);
   }
   #file-protocol-warning h1 {
-    font-size: 22px; font-weight: 600; color: #211d12;
+    font-family: "Familjen Grotesk", "Epilogue", Arial, sans-serif; font-size: 24px; font-weight: 600; color: #1d1b18;
     margin-bottom: 14px;
   }
-  #file-protocol-warning p { font-size: 16px; line-height: 1.6; margin-bottom: 14px; color: #211d12; }
+  #file-protocol-warning p { font-size: 16px; line-height: 1.6; margin-bottom: 14px; color: #1d1b18; }
   #file-protocol-warning code {
-    display: block; background: #f4efe1; border: 1px solid #bfb494;
-    border-radius: 0; padding: 10px 14px; margin: 8px 0 14px;
+    display: block; background: #f5f0e3; border: 1px solid #d3cbb8;
+    border-radius: 3px; padding: 10px 14px; margin: 8px 0 14px;
     font-family: "Plex Mono", Menlo, Consolas, monospace;
-    font-size: 12.5px; color: #8a2a17;
+    font-size: 13px; color: #1d1b18;
     user-select: all;
   }
-  #file-protocol-warning small { font-size: 13px; color: #5e5747; }
+  #file-protocol-warning small { font-size: 13px; color: #4f4b44; }
 </style>
 </head>
 <body>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     file:// detection — ES modules cannot load from file:// origin,
+     file:// detection: ES modules cannot load from file:// origin,
      so if the user double-clicked index.html we show a helpful banner
      instead of a page full of dead buttons.
      ═══════════════════════════════════════════════════════════════ -->
@@ -67,29 +67,22 @@
   }
 </script>
 
-<header>
-  <div class="logo">
-    <div class="logo-icon">M</div>
-    <div>
-      <h1>MIRL 3D Artifact Analyzer</h1>
-      <span>MIRL (Material / Image Research Lab) · UC Santa Barbara</span>
-    </div>
-  </div>
+<header class="bar">
+  <div class="brand" role="img" aria-label="MIRL 3D Artifact Analyzer"><span class="bleed" aria-hidden="true"></span><b aria-hidden="true">MIRL</b><span class="tool" aria-hidden="true">3D Analyzer</span></div>
+  <nav class="tabs" aria-label="Views">
+    <button class="tab active" data-tab="viewer-tab" aria-current="page">Viewer</button>
+    <button class="tab" data-tab="compare-tab">Compare</button>
+    <button class="tab" data-tab="annotations-tab">Annotations</button>
+    <button class="tab" data-tab="scripts-tab">Scripts</button>
+    <button class="tab" data-tab="database-tab">Object database</button>
+    <button class="tab" data-tab="about-tab">About</button>
+  </nav>
   <div class="header-right">
     <div id="backend-badge" class="disconnected">Backend offline</div>
-    <button class="btn btn-sm" id="btn-new" style="display:none">New File</button>
+    <button class="btn btn-sm" id="btn-new" style="display:none">New file</button>
     <button class="btn btn-sm btn-primary" id="btn-screenshot" style="display:none">Screenshot</button>
   </div>
 </header>
-
-<div class="tabs">
-  <div class="tab active" data-tab="viewer-tab">Viewer</div>
-  <div class="tab" data-tab="compare-tab">Compare</div>
-  <div class="tab" data-tab="annotations-tab">Annotations</div>
-  <div class="tab" data-tab="scripts-tab">Scripts</div>
-  <div class="tab" data-tab="database-tab">Object Database</div>
-  <div class="tab" data-tab="about-tab">About</div>
-</div>
 
 <div class="main">
 
@@ -98,10 +91,10 @@
     <div class="sidebar">
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">View Mode <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">View mode <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <label class="cl">Render Style</label>
+            <label class="cl">Render style</label>
             <div class="tg" id="view-mode">
               <button class="tb active" data-mode="solid">Solid</button>
               <button class="tb" data-mode="wireframe">Wireframe</button>
@@ -117,17 +110,17 @@
               <button class="tb" data-bg="#ffffff">White</button>
             </div>
           </div>
-          <div class="cg"><label class="chk"><input type="checkbox" id="chk-axes"> Show Axes</label></div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-view-reset">Reset View</button></div>
+          <div class="cg"><label class="chk"><input type="checkbox" id="chk-axes"> Show axes</label></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-view-reset">Reset view</button></div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Position &amp; Orientation <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Position &amp; orientation <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <button class="btn btn-sm btn-block" id="btn-gizmo-toggle">Enable Orient / Move</button>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Drag an X, Y, or Z handle on the model to turn or shift it. Release the handle to orbit as usual.</div>
+            <button class="btn btn-sm btn-block" id="btn-gizmo-toggle">Show orient and move handles</button>
+            <div class="note">Drag an X, Y, or Z handle on the model to turn or shift it. Release the handle to orbit as usual.</div>
           </div>
           <div class="cg">
             <label class="cl">Handle</label>
@@ -136,12 +129,12 @@
               <button class="tb" data-gmode="translate">Move</button>
             </div>
           </div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-gizmo-reset">Reset Orientation</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-gizmo-reset">Reset orientation</button></div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header collapsed" onclick="toggleSS(this)">Views &amp; Capture <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header collapsed" aria-expanded="false" onclick="toggleSS(this)">Views &amp; capture <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
             <label class="cl">Preset view</label>
@@ -156,13 +149,13 @@
           </div>
           <div class="cg">
             <button class="btn btn-sm btn-block" id="btn-turntable">Turntable (WebM)</button>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Records one full rotation as a video for talks. Opens in any browser; Chrome captures best.</div>
+            <div class="note">Records one full rotation as a video for talks. Opens in any browser; Chrome captures best.</div>
           </div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header collapsed" onclick="toggleSS(this)">Lighting <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header collapsed" aria-expanded="false" onclick="toggleSS(this)">Lighting <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
             <label class="cl">Ambient <span id="lgt-ambient-v">0.60</span></label>
@@ -180,25 +173,25 @@
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header collapsed" onclick="toggleSS(this)">Raking Light <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header collapsed" aria-expanded="false" onclick="toggleSS(this)">Raking light <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <label class="chk"><input type="checkbox" id="chk-raking"> Enable Raking Light</label>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">A single low-angle light to sweep across the surface and read incised or raised detail, as in RTI. Drag the dot: the rim is a grazing light, the centre is frontal.</div>
+            <label class="chk"><input type="checkbox" id="chk-raking"> Turn on raking light</label>
+            <div class="note">A single low-angle light to sweep across the surface and read incised or raised detail, as in RTI. Drag the dot: the rim is a grazing light, the centre is frontal.</div>
           </div>
           <div id="rake-controls" style="display:none">
             <div class="cg" style="display:flex;justify-content:center">
               <svg id="rake-dial" width="148" height="148" viewBox="0 0 148 148" style="touch-action:none;cursor:crosshair">
-                <circle cx="74" cy="74" r="66" fill="#fcf9ef" stroke="#bfb494" stroke-width="1.5"/>
-                <circle cx="74" cy="74" r="44" fill="none" stroke="#ddd4bd" stroke-width="1"/>
-                <circle cx="74" cy="74" r="22" fill="none" stroke="#ddd4bd" stroke-width="1"/>
-                <line x1="74" y1="8" x2="74" y2="15" stroke="#92896e" stroke-width="1"/>
-                <line x1="74" y1="133" x2="74" y2="140" stroke="#92896e" stroke-width="1"/>
-                <line x1="8" y1="74" x2="15" y2="74" stroke="#92896e" stroke-width="1"/>
-                <line x1="133" y1="74" x2="140" y2="74" stroke="#92896e" stroke-width="1"/>
-                <line id="rake-vec" x1="74" y1="74" x2="36" y2="36" stroke="#8a2a17" stroke-width="1.5"/>
-                <circle cx="74" cy="74" r="2.5" fill="#92896e"/>
-                <circle id="rake-puck" cx="36" cy="36" r="7" fill="#8a2a17" stroke="#fcf9ef" stroke-width="1.5"/>
+                <circle cx="74" cy="74" r="66" fill="#ffffff" stroke="#d3cbb8" stroke-width="1.5"/>
+                <circle cx="74" cy="74" r="44" fill="none" stroke="#e9e3d4" stroke-width="1"/>
+                <circle cx="74" cy="74" r="22" fill="none" stroke="#e9e3d4" stroke-width="1"/>
+                <line x1="74" y1="8" x2="74" y2="15" stroke="#6b665c" stroke-width="1"/>
+                <line x1="74" y1="133" x2="74" y2="140" stroke="#6b665c" stroke-width="1"/>
+                <line x1="8" y1="74" x2="15" y2="74" stroke="#6b665c" stroke-width="1"/>
+                <line x1="133" y1="74" x2="140" y2="74" stroke="#6b665c" stroke-width="1"/>
+                <line id="rake-vec" x1="74" y1="74" x2="36" y2="36" stroke="#2f49e0" stroke-width="1.5"/>
+                <circle cx="74" cy="74" r="2.5" fill="#6b665c"/>
+                <circle id="rake-puck" cx="36" cy="36" r="7" fill="#2f49e0" stroke="#ffffff" stroke-width="1.5"/>
               </svg>
             </div>
             <div class="cg"><div class="cl" id="rake-readout" style="text-align:center">azimuth 135° · altitude 24°</div></div>
@@ -213,10 +206,10 @@
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Surface Analysis <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Surface analysis <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <label class="cl">Surface Map</label>
+            <label class="cl">Surface map</label>
             <div class="tg" id="curv-mode">
               <button class="tb active" data-curv="none">None</button>
               <button class="tb" data-curv="mean">Mean</button>
@@ -226,11 +219,11 @@
               <button class="tb" data-curv="shapeIndex">Shape Idx</button>
               <button class="tb" data-curv="classification">SI Class</button>
             </div>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">Thickness maps the wall depth from each point to the opposite surface. Set a physical scale for real units. Open areas read neutral.</div>
+            <div class="note">Thickness maps the wall depth from each point to the opposite surface. Set a physical scale for real units. Open areas read neutral.</div>
             <div id="si-class-legend-sidebar" style="display:none;margin-top:8px"></div>
           </div>
           <div class="cg">
-            <label class="cl">Color Map</label>
+            <label class="cl">Color map</label>
             <div class="tg" id="cmap-mode">
               <button class="tb active" data-cmap="turbo">Turbo</button>
               <button class="tb" data-cmap="viridis">Viridis</button>
@@ -239,25 +232,25 @@
             </div>
           </div>
           <div class="cg">
-            <label class="cl">Percentile Clip</label>
-            <div class="sr"><span style="font-size:10.5px;color:var(--text2);min-width:18px">Lo</span><input type="range" id="clip-lo" min="0" max="20" value="2"><span class="sv" id="clip-lo-v">2%</span></div>
-            <div class="sr" style="margin-top:4px"><span style="font-size:10.5px;color:var(--text2);min-width:18px">Hi</span><input type="range" id="clip-hi" min="80" max="100" value="98"><span class="sv" id="clip-hi-v">98%</span></div>
+            <label class="cl">Percentile clip</label>
+            <div class="sr"><span>Lo</span><input type="range" id="clip-lo" min="0" max="20" value="2"><span class="sv" id="clip-lo-v">2%</span></div>
+            <div class="sr" style="margin-top:4px"><span>Hi</span><input type="range" id="clip-hi" min="80" max="100" value="98"><span class="sv" id="clip-hi-v">98%</span></div>
           </div>
           <div class="cg">
             <div id="backend-curv-btn" style="display:none">
-              <button class="btn btn-sm btn-block" id="btn-use-backend">Use Backend (PyVista)</button>
-              <div style="font-size:10.5px;color:var(--text2);margin-top:4px;text-align:center">More accurate computation</div>
+              <button class="btn btn-sm btn-block" id="btn-use-backend">Use the backend (PyVista)</button>
+              <div class="note" style="text-align:center">A more accurate computation</div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header collapsed" onclick="toggleSS(this)">Radiance Scaling <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header collapsed" aria-expanded="false" onclick="toggleSS(this)">Radiance scaling <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <label class="chk"><input type="checkbox" id="chk-radiance"> Enable Radiance Scaling</label>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:4px;line-height:1.4">Vergne et al. 2010: scales diffuse by mean curvature to emphasize surface shape</div>
+            <label class="chk"><input type="checkbox" id="chk-radiance"> Turn on radiance scaling</label>
+            <div class="note">Vergne et al. 2010: scales the diffuse light by mean curvature to bring out surface shape.</div>
           </div>
           <div id="rs-controls" style="display:none">
             <div class="cg">
@@ -273,9 +266,9 @@
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Cross-Section <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Cross-section <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><label class="chk"><input type="checkbox" id="chk-clip"> Enable Clipping Plane</label></div>
+          <div class="cg"><label class="chk"><input type="checkbox" id="chk-clip"> Turn on the clipping plane</label></div>
           <div class="cg">
             <label class="cl">Axis</label>
             <div class="tg" id="clip-axis">
@@ -288,7 +281,7 @@
             <label class="cl">Position</label>
             <div class="sr"><input type="range" id="clip-pos" min="0" max="100" value="50"><span class="sv" id="clip-pos-v">50%</span></div>
           </div>
-          <div class="cg"><label class="chk"><input type="checkbox" id="chk-clip-flip"> Flip Direction</label></div>
+          <div class="cg"><label class="chk"><input type="checkbox" id="chk-clip-flip"> Flip the direction</label></div>
           <div class="cg">
             <label class="cl">Profile style</label>
             <div class="tg" id="profile-style">
@@ -297,55 +290,55 @@
             </div>
           </div>
           <div class="cg">
-            <button class="btn btn-sm btn-block" id="btn-export-profile">Export Profile SVG</button>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">A 2D section drawing at the current cut, in the archaeological profile convention. Section + elevation draws the cut wall on one side of the axis and the exterior silhouette on the other, for roughly symmetric vessels. Set a physical scale for a scale bar.</div>
+            <button class="btn btn-sm btn-block" id="btn-export-profile">Export the profile (SVG)</button>
+            <div class="note">A 2D section drawing at the current cut, in the archaeological profile convention. Section + elevation draws the cut wall on one side of the axis and the exterior silhouette on the other, for roughly symmetric vessels. Set a physical scale for a scale bar.</div>
           </div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Scale &amp; Units <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Scale &amp; units <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
             <label class="cl">Physical scale</label>
-            <div style="display:flex;gap:5px;align-items:center">
-              <input type="number" id="scale-mm" min="0.001" step="any" placeholder="e.g. 25.4" style="flex:1;padding:5px 7px;border:1px solid var(--border);border-radius:5px;font-size:12px;min-width:0">
-              <select id="scale-unit" style="padding:5px 6px;border:1px solid var(--border);border-radius:5px;font-size:12px;">
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" id="scale-mm" min="0.001" step="any" placeholder="e.g. 25.4" style="flex:1;min-width:0">
+              <select id="scale-unit" style="width:auto">
                 <option value="mm">mm</option>
                 <option value="cm">cm</option>
                 <option value="m">m</option>
                 <option value="in">in</option>
               </select>
-              <span style="font-size:10.5px;color:var(--text2);white-space:nowrap">/ unit</span>
+              <span class="note" style="margin:0;white-space:nowrap">per unit</span>
             </div>
-            <div id="scale-status" style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">No scale set: results shown in mesh units.</div>
+            <div id="scale-status" class="note">No scale set: results shown in mesh units.</div>
           </div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Object Metrics <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Object metrics <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px dotted var(--border)">
-            <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Surface area</span><span id="mt-area" style="text-align:right">—</span>
+          <div class="rrow">
+            <span class="rkey">Surface area</span><span class="rval" id="mt-area">–</span>
           </div>
-          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px dotted var(--border)">
-            <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Volume</span><span id="mt-vol" style="text-align:right">—</span>
+          <div class="rrow">
+            <span class="rkey">Volume</span><span class="rval" id="mt-vol">–</span>
           </div>
-          <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px dotted var(--border)">
-            <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Oriented L×W×H</span><span id="mt-oriented" style="text-align:right">—</span>
+          <div class="rrow">
+            <span class="rkey">Oriented L × W × H</span><span class="rval" id="mt-oriented">–</span>
           </div>
-          <div id="mt-note" style="font-size:10px;color:var(--accent);margin-top:5px;line-height:1.4"></div>
-          <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Oriented dimensions follow the object's principal axes, not the screen box. Set a physical scale above for real units; volume needs a watertight mesh.</div>
+          <div id="mt-note" class="note" style="color:var(--key-ink)"></div>
+          <div class="note">Oriented dimensions follow the object's principal axes, not the screen box. Set a physical scale above for real units; volume needs a watertight mesh.</div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Measurement <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Measurement <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <button class="btn btn-sm btn-block" id="btn-measure-toggle">Enable Measurement Mode</button>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Click two surface points to measure.</div>
+            <button class="btn btn-sm btn-block" id="btn-measure-toggle">Turn on measuring</button>
+            <div class="note">Click two surface points to measure.</div>
           </div>
           <div class="cg">
             <label class="cl">Distance type</label>
@@ -354,16 +347,16 @@
               <button class="tb" data-mmode="geodesic">Geodesic</button>
             </div>
           </div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-measure-clear">Clear All Measurements</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-measure-clear">Clear all measurements</button></div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Surface Texture (ISO 25178) <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Surface texture (ISO 25178) <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
           <div class="cg">
-            <button class="btn btn-sm btn-block" id="btn-brush-toggle">Enable Region Brush</button>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Click or drag on mesh to paint a region, then compute Sa/Sq/Sz.</div>
+            <button class="btn btn-sm btn-block" id="btn-brush-toggle">Turn on the region brush</button>
+            <div class="note">Click or drag on mesh to paint a region, then compute Sa/Sq/Sz.</div>
           </div>
           <div class="cg">
             <label class="cl">Brush radius <span id="brush-radius-v" style="color:var(--text)">5</span>%</label>
@@ -381,14 +374,14 @@
             <button class="btn btn-sm btn-primary" style="flex:1" id="btn-roughness-compute">Compute</button>
             <button class="btn btn-sm" id="btn-brush-clear">Clear</button>
           </div>
-          <div id="roughness-inline" style="display:none;margin-top:8px;font-size:11.5px;border-top:1px solid var(--border);padding-top:8px"></div>
+          <div id="roughness-inline" style="display:none;margin-top:10px"></div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header collapsed" onclick="toggleSS(this)">Wall Thickness <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header collapsed" aria-expanded="false" onclick="toggleSS(this)">Wall thickness <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><div style="font-size:10.5px;color:var(--text2);line-height:1.4">Shape Diameter Function — median of inward cone rays per vertex. Works best on near-closed (watertight) meshes. Large meshes may take 10–30 seconds.</div></div>
+          <div class="cg"><div class="note">Shape Diameter Function: the median of inward cone rays at each vertex. Works best on near-closed (watertight) meshes. Large meshes may take 10 to 30 seconds.</div></div>
           <div class="cg">
             <label class="cl">Rays per cone <span id="wt-rays-v">11</span></label>
             <div class="sr"><input type="range" id="wt-rays" min="5" max="21" step="2" value="11"></div>
@@ -405,44 +398,44 @@
               <button class="tb" data-sub="4">4× fast</button>
             </div>
           </div>
-          <div class="cg"><button class="btn btn-sm btn-primary btn-block" id="btn-wt-compute">Compute Thickness Map</button></div>
-          <div id="wt-inline" style="display:none;margin-top:8px;font-size:11.5px;border-top:1px solid var(--border);padding-top:8px"></div>
+          <div class="cg"><button class="btn btn-sm btn-primary btn-block" id="btn-wt-compute">Compute the thickness map</button></div>
+          <div id="wt-inline" style="display:none;margin-top:10px"></div>
         </div>
       </div>
 
       <div class="sidebar-section" id="save-db-section" style="display:none">
-        <div class="ss-header" onclick="toggleSS(this)" style="color:var(--green)">Save to Object Database <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Save to the object database <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><label class="cl">Artifact name *</label><input type="text" id="sdb-name" placeholder="e.g. Ceramic Vessel 01" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">Scan date</label><input type="date" id="sdb-date" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">Scanner</label><select id="sdb-scanner" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"><option value="">— Select —</option><option value="Einstar">Einstar</option><option value="Artec Eva">Artec Eva</option><option value="Artec Leo">Artec Leo</option><option value="Structured Light">Structured Light (Other)</option><option value="Photogrammetry">Photogrammetry</option><option value="CT Scan">CT Scan</option><option value="Other">Other</option></select></div>
-          <div class="cg"><label class="cl">Material</label><select id="sdb-material" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"><option value="">— Select —</option><option value="Ceramic">Ceramic</option><option value="Stone">Stone</option><option value="Metal">Metal</option><option value="Bone">Bone</option><option value="Wood">Wood</option><option value="Glass">Glass</option><option value="Textile">Textile</option><option value="Composite">Composite</option><option value="Unknown">Unknown</option></select></div>
-          <div class="cg"><label class="cl">Researcher</label><input type="text" id="sdb-researcher" placeholder="Name or initials" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">Notes</label><textarea id="sdb-notes" placeholder="Condition, provenance…" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;min-height:54px;font-family:inherit;resize:vertical;"></textarea></div>
-          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-sdb-save">Save to Database</button><div id="sdb-status" style="font-size:10.5px;margin-top:5px;display:none"></div></div>
+          <div class="cg"><label class="cl">Artifact name (required)</label><input type="text" id="sdb-name" placeholder="e.g. Ceramic Vessel 01"></div>
+          <div class="cg"><label class="cl">Scan date</label><input type="date" id="sdb-date"></div>
+          <div class="cg"><label class="cl">Scanner</label><select id="sdb-scanner"><option value="">Choose…</option><option value="Einstar">Einstar</option><option value="Artec Eva">Artec Eva</option><option value="Artec Leo">Artec Leo</option><option value="Structured Light">Structured Light (Other)</option><option value="Photogrammetry">Photogrammetry</option><option value="CT Scan">CT Scan</option><option value="Other">Other</option></select></div>
+          <div class="cg"><label class="cl">Material</label><select id="sdb-material"><option value="">Choose…</option><option value="Ceramic">Ceramic</option><option value="Stone">Stone</option><option value="Metal">Metal</option><option value="Bone">Bone</option><option value="Wood">Wood</option><option value="Glass">Glass</option><option value="Textile">Textile</option><option value="Composite">Composite</option><option value="Unknown">Unknown</option></select></div>
+          <div class="cg"><label class="cl">Researcher</label><input type="text" id="sdb-researcher" placeholder="Name or initials"></div>
+          <div class="cg"><label class="cl">Notes</label><textarea id="sdb-notes" placeholder="Condition, provenance…" style="min-height:54px"></textarea></div>
+          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-sdb-save">Save to the database</button><div id="sdb-status" class="note" style="display:none"></div></div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Export <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Export <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:8px">Visualizations</div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-png">Screenshot PNG</button></div>
-          <div class="cg"><label class="chk"><input type="checkbox" id="chk-fig-scalebar" checked> Scale bar (needs a set scale)</label></div>
+          <div class="sub-label">Visualizations</div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-png">Screenshot (PNG)</button></div>
+          <div class="cg"><label class="chk"><input type="checkbox" id="chk-fig-scalebar" checked> Scale bar (needs a scale)</label></div>
           <div class="cg"><label class="chk"><input type="checkbox" id="chk-fig-axis" checked> Orientation triad</label></div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin:10px 0 8px">Document</div>
-          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-specimen-sheet">Specimen Sheet (Print)</button>
-            <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">A one-page object record: view, dimensions, quality, roughness, measurements, and annotations. Save to PDF from the print dialog.</div></div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin:10px 0 8px">Analysis Data</div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-csv">Curvature CSV</button></div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-export-roughness">Roughness Report CSV</button></div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-export-measurements">Measurements CSV</button></div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin:10px 0 8px">Annotations</div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export">Annotations JSON</button></div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export-viewer-csv">Annotations CSV</button></div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin:10px 0 8px">Full Report</div>
-          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-export-report">Export Full Report JSON</button></div>
-          <div style="font-size:10.5px;color:var(--text2);margin-top:5px;line-height:1.4">Bundles model info, quality, curvature stats, roughness, measurements, and annotations.</div>
+          <div class="sub-label">Document</div>
+          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-specimen-sheet">Specimen sheet (print)</button>
+            <div class="note">A one-page object record: view, dimensions, quality, roughness, measurements, and annotations. Save to PDF from the print dialog.</div></div>
+          <div class="sub-label">Analysis data</div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-csv">Curvature (CSV)</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-export-roughness">Roughness report (CSV)</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-export-measurements">Measurements (CSV)</button></div>
+          <div class="sub-label">Annotations</div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export">Annotations (JSON)</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export-viewer-csv">Annotations (CSV)</button></div>
+          <div class="sub-label">Full report</div>
+          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-export-report">Full report (JSON)</button></div>
+          <div class="note">Bundles model info, quality, curvature stats, roughness, measurements, and annotations.</div>
         </div>
       </div>
 
@@ -451,10 +444,10 @@
     <div class="viewport" id="viewer-vp">
       <div id="viewer-upload" class="upload-overlay">
         <div class="upload-box" id="upload-box">
-          <div class="upload-icon">△</div>
-          <h2>Upload a 3D Artifact</h2>
-          <p>Drag &amp; drop a mesh file here, or click to browse.<br>Supported: OBJ (+ MTL/textures), STL, PLY</p>
-          <button class="btn btn-primary">Choose File</button>
+          <div class="upload-icon" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M22 4 39 13.5v17L22 40 5 30.5v-17z"/><path d="M5 13.5 22 23l17-9.5M22 23v17"/></svg></div>
+          <h2>Open a 3D scan</h2>
+          <p>Drag a mesh file here, or click to choose one.<br>OBJ (with its MTL and textures), STL, or PLY.</p>
+          <button class="btn btn-primary">Choose a file</button>
           <input type="file" id="file-input" accept=".obj,.mtl,.stl,.ply,.jpg,.jpeg,.png" multiple>
         </div>
       </div>
@@ -465,28 +458,28 @@
       <div id="quality-card">
         <div class="qc-score">
           <div class="qc-badge A" id="qc-badge">A</div>
-          <div><div class="qc-label">Scan Quality</div><div style="font-size:10px;color:var(--text2)" id="qc-score-label">Excellent</div></div>
+          <div><div class="qc-label">Scan quality</div><div id="qc-score-label">Excellent</div></div>
         </div>
-        <div class="qc-row"><span class="qc-key">Vertices</span><span class="qc-val" id="qc-verts">—</span></div>
-        <div class="qc-row"><span class="qc-key">Faces</span><span class="qc-val" id="qc-faces">—</span></div>
-        <div class="qc-row"><span class="qc-key">Dimensions</span><span class="qc-val" id="qc-dims">—</span></div>
-        <div class="qc-row"><span class="qc-key">Uniformity</span><span class="qc-val" id="qc-uniform">—</span></div>
-        <div class="qc-row"><span class="qc-key">Holes</span><span class="qc-val" id="qc-holes">—</span></div>
+        <div class="qc-row"><span class="qc-key">Vertices</span><span class="qc-val" id="qc-verts">–</span></div>
+        <div class="qc-row"><span class="qc-key">Faces</span><span class="qc-val" id="qc-faces">–</span></div>
+        <div class="qc-row"><span class="qc-key">Dimensions</span><span class="qc-val" id="qc-dims">–</span></div>
+        <div class="qc-row"><span class="qc-key">Uniformity</span><span class="qc-val" id="qc-uniform">–</span></div>
+        <div class="qc-row"><span class="qc-key">Holes</span><span class="qc-val" id="qc-holes">–</span></div>
       </div>
       <div id="color-legend">
-        <div class="legend-title" id="legend-title">Mean Curvature</div>
+        <div class="legend-title" id="legend-title">Mean curvature</div>
         <div class="legend-bar" id="legend-bar"></div>
         <div class="legend-labels"><span id="legend-min">0.00</span><span id="legend-max">1.00</span></div>
       </div>
       <div id="info-bar">
         <div><strong id="ib-verts">0</strong> verts</div>
         <div><strong id="ib-faces">0</strong> faces</div>
-        <div><strong id="ib-file">—</strong></div>
+        <div><strong id="ib-file">–</strong></div>
       </div>
       <div id="measure-overlay">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px;">Measurement</div>
-        <div class="mrow"><span class="mkey">Euclidean</span><span class="mval" id="m-eucl">—</span></div>
-        <div class="mrow" id="m-geod-row" style="display:none"><span class="mkey">Geodesic</span><span class="mval" id="m-geod">—</span></div>
+        <div class="result-head">Measurement</div>
+        <div class="mrow"><span class="mkey">Euclidean</span><span class="mval" id="m-eucl">–</span></div>
+        <div class="mrow" id="m-geod-row" style="display:none"><span class="mkey">Geodesic</span><span class="mval" id="m-geod">–</span></div>
       </div>
     </div>
   </div><!-- /viewer-tab -->
@@ -495,39 +488,39 @@
   <div class="tab-panel" id="compare-tab">
     <div class="sidebar">
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Left Viewport <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Left view <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><label class="cl">Model</label><button class="compare-upload" id="cmp-load-left">Upload Left Model (OBJ)</button><input type="file" id="cmp-file-left" accept=".obj,.mtl,.jpg,.jpeg,.png" multiple style="display:none"><div style="font-size:10.5px;color:var(--text2);margin-top:4px" id="cmp-left-name">No file loaded</div></div>
-          <div class="cg"><label class="cl">Analysis</label><select id="cmp-left-analysis"><option value="none">None (surface)</option><option value="mean">Mean Curvature</option><option value="gaussian">Gaussian Curvature</option><option value="curvedness">Curvedness</option></select></div>
-          <div class="cg"><label class="cl">Color Map</label><select id="cmp-left-cmap"><option value="turbo">Turbo</option><option value="viridis">Viridis</option><option value="coolwarm">Cool-Warm</option><option value="gray">Grayscale</option></select></div>
+          <div class="cg"><label class="cl">Model</label><button class="compare-upload" id="cmp-load-left">Open the left model (OBJ)</button><input type="file" id="cmp-file-left" accept=".obj,.mtl,.jpg,.jpeg,.png" multiple style="display:none"><div class="note" id="cmp-left-name">No file loaded</div></div>
+          <div class="cg"><label class="cl">Analysis</label><select id="cmp-left-analysis"><option value="none">None (surface)</option><option value="mean">Mean curvature</option><option value="gaussian">Gaussian curvature</option><option value="curvedness">Curvedness</option></select></div>
+          <div class="cg"><label class="cl">Color map</label><select id="cmp-left-cmap"><option value="turbo">Turbo</option><option value="viridis">Viridis</option><option value="coolwarm">Cool-Warm</option><option value="gray">Grayscale</option></select></div>
         </div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Right Viewport <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Right view <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><label class="cl">Model</label><button class="compare-upload" id="cmp-load-right">Upload Right Model (OBJ)</button><input type="file" id="cmp-file-right" accept=".obj,.mtl,.jpg,.jpeg,.png" multiple style="display:none"><div style="font-size:10.5px;color:var(--text2);margin-top:4px" id="cmp-right-name">No file loaded, or use same as left</div></div>
-          <div class="cg"><label class="cl">Analysis</label><select id="cmp-right-analysis"><option value="none">None (surface)</option><option value="mean" selected>Mean Curvature</option><option value="gaussian">Gaussian Curvature</option><option value="curvedness">Curvedness</option></select></div>
-          <div class="cg"><label class="cl">Color Map</label><select id="cmp-right-cmap"><option value="turbo">Turbo</option><option value="viridis">Viridis</option><option value="coolwarm" selected>Cool-Warm</option><option value="gray">Grayscale</option></select></div>
+          <div class="cg"><label class="cl">Model</label><button class="compare-upload" id="cmp-load-right">Open the right model (OBJ)</button><input type="file" id="cmp-file-right" accept=".obj,.mtl,.jpg,.jpeg,.png" multiple style="display:none"><div class="note" id="cmp-right-name">No file loaded, or use same as left</div></div>
+          <div class="cg"><label class="cl">Analysis</label><select id="cmp-right-analysis"><option value="none">None (surface)</option><option value="mean" selected>Mean curvature</option><option value="gaussian">Gaussian curvature</option><option value="curvedness">Curvedness</option></select></div>
+          <div class="cg"><label class="cl">Color map</label><select id="cmp-right-cmap"><option value="turbo">Turbo</option><option value="viridis">Viridis</option><option value="coolwarm" selected>Cool-Warm</option><option value="gray">Grayscale</option></select></div>
         </div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Camera <span class="ss-arrow">▾</span></div>
-        <div class="ss-body"><div class="cg"><label class="chk"><input type="checkbox" id="chk-sync-cam" checked> Sync Cameras</label></div></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Camera <span class="ss-arrow">▾</span></button>
+        <div class="ss-body"><div class="cg"><label class="chk"><input type="checkbox" id="chk-sync-cam" checked> Sync the cameras</label></div></div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Deviation Map <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Deviation map <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg" style="font-size:10.5px;color:var(--text2);line-height:1.4">Signed distance from the right (test) scan to the left (reference) scan, drawn on the right. Red is outward gain, blue is inward loss. Align first if the two scans are not already registered.</div>
+          <div class="cg note">Signed distance from the right (test) scan to the left (reference) scan, drawn on the right. Red is outward gain, blue is inward loss. Align first if the two scans are not already registered.</div>
           <div class="cg"><button class="btn btn-sm btn-block" id="btn-cmp-align">Align test to reference (ICP)</button></div>
-          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-cmp-deviation">Compute Deviation Map</button></div>
-          <div id="cmp-dev-status" style="font-size:10.5px;color:var(--green);line-height:1.4"></div>
+          <div class="cg"><button class="btn btn-sm btn-block btn-primary" id="btn-cmp-deviation">Compute the deviation map</button></div>
+          <div id="cmp-dev-status" class="note" style="color:var(--ok)"></div>
           <div id="cmp-dev-legend" style="display:none;margin-top:6px">
             <div id="cmp-dev-bar" style="height:12px;border:1px solid var(--border)"></div>
-            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--text2);margin-top:3px"><span id="cmp-dev-lo">-</span><span>0</span><span id="cmp-dev-hi">+</span></div>
-            <div style="font-family:var(--mono);font-size:11px;margin-top:6px" id="cmp-dev-rms">RMS deviation: —</div>
-            <div style="font-family:var(--mono);font-size:9.5px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-top:8px">Distribution</div>
+            <div class="legend-labels" style="margin-top:3px"><span id="cmp-dev-lo">-</span><span>0</span><span id="cmp-dev-hi">+</span></div>
+            <div class="rval" style="text-align:left;margin-top:6px" id="cmp-dev-rms">RMS deviation: –</div>
+            <div class="sub-label">Distribution</div>
             <div id="cmp-dev-hist" style="margin-top:3px"></div>
-            <div class="cg" style="margin-top:8px"><button class="btn btn-sm btn-block" id="btn-cmp-dev-csv">Export Deviation CSV</button></div>
+            <div class="cg" style="margin-top:8px"><button class="btn btn-sm btn-block" id="btn-cmp-dev-csv">Deviation (CSV)</button></div>
           </div>
         </div>
       </div>
@@ -541,30 +534,29 @@
   <div class="tab-panel" id="annotations-tab">
     <div class="sidebar">
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Annotation Mode <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Annotation mode <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-mode">Enable Annotation Mode</button><div style="font-size:10.5px;color:var(--text2);margin-top:6px;line-height:1.4;">Click any point on the mesh surface to place a labeled annotation pin.</div></div>
-          <div class="cg"><label class="cl">Pin Color</label><div class="tg" id="pin-color"><button class="tb active" data-color="#e74c3c">Red</button><button class="tb" data-color="#f39c12">Amber</button><button class="tb" data-color="#27ae60">Green</button><button class="tb" data-color="#2980b9">Blue</button></div></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-mode">Turn on annotation mode</button><div class="note">Click any point on the mesh surface to place a labeled annotation pin.</div></div>
+          <div class="cg"><label class="cl">Pin colour</label><div class="tg" id="pin-color"><button class="tb active" data-color="#c62f3a">Red</button><button class="tb" data-color="#c98a0e">Amber</button><button class="tb" data-color="#2f8a4c">Green</button><button class="tb" data-color="#3d5afe">Blue</button></div></div>
         </div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Annotations (<span id="ann-count">0</span>) <span class="ss-arrow">▾</span></div>
-        <div class="ss-body" id="ann-list"><div style="font-size:11.5px;color:var(--text2);">No annotations yet.</div></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Annotations (<span id="ann-count">0</span>) <span class="ss-arrow">▾</span></button>
+        <div class="ss-body" id="ann-list"><div class="note" style="margin:0">No annotations yet.</div></div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Export <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Export <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export2">Export Annotations JSON</button></div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export-csv">Export Annotations CSV</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export2">Annotations (JSON)</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-ann-export-csv">Annotations (CSV)</button></div>
         </div>
       </div>
     </div>
     <div class="viewport" id="ann-vp">
       <div class="upload-overlay" id="ann-upload-msg">
-        <div style="text-align:center;color:var(--text2);">
-          <div style="font-size:32px;margin-bottom:12px;">📌</div>
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Load a model in the Viewer tab first</div>
-          <div style="font-size:12px;">Then return here to annotate it.</div>
+        <div style="text-align:center;color:var(--ink-2);max-width:360px">
+          <div class="db-empty-title">Open a scan in the Viewer first</div>
+          <div style="font-size:15px">Then come back here to annotate it.</div>
         </div>
       </div>
     </div>
@@ -574,26 +566,26 @@
   <div class="tab-panel" id="scripts-tab">
     <div class="scripts-layout">
       <div class="scripts-sidebar">
-        <h3>Built-in Scripts</h3>
-        <div class="script-item active" data-script="template" onclick="loadScript(this)">Custom Script<small>Write your own analysis</small></div>
-        <div class="script-item" data-script="extremes" onclick="loadScript(this)">Extreme Curvature<small>Highlight sharp features</small></div>
-        <div class="script-item" data-script="flat" onclick="loadScript(this)">Flat Region Detection<small>Find planar surfaces</small></div>
-        <div class="script-item" data-script="depth" onclick="loadScript(this)">Depth Map (Z-axis)<small>Height-coded coloring</small></div>
-        <div class="script-item" data-script="normal" onclick="loadScript(this)">Normal Deviation<small>Local surface orientation</small></div>
-        <div class="script-item" data-script="boundary" onclick="loadScript(this)">Boundary Proximity<small>Distance from mesh edges</small></div>
+        <h3>Built-in scripts</h3>
+        <div class="script-item active" data-script="template" onclick="loadScript(this)">Custom script<small>Write your own analysis</small></div>
+        <div class="script-item" data-script="extremes" onclick="loadScript(this)">Extreme curvature<small>Highlight sharp features</small></div>
+        <div class="script-item" data-script="flat" onclick="loadScript(this)">Flat region detection<small>Find planar surfaces</small></div>
+        <div class="script-item" data-script="depth" onclick="loadScript(this)">Depth map (Z axis)<small>Height-coded coloring</small></div>
+        <div class="script-item" data-script="normal" onclick="loadScript(this)">Normal deviation<small>Local surface orientation</small></div>
+        <div class="script-item" data-script="boundary" onclick="loadScript(this)">Boundary proximity<small>Distance from mesh edges</small></div>
         <div style="margin-top:16px;">
-          <h3>Backend Scripts</h3>
+          <h3>Backend scripts</h3>
           <div id="backend-scripts-info" class="backend-info off">Backend offline.<br>Start mirl-backend.py to enable server-side PyVista scripts.</div>
         </div>
       </div>
       <div class="scripts-main">
         <div class="editor-bar">
-          <h3 id="editor-title">Custom Script</h3>
-          <button class="btn btn-sm" id="btn-run-script">▶ Run Script</button>
-          <button class="btn btn-sm" id="btn-clear-output">Clear Output</button>
+          <h3 id="editor-title">Custom script</h3>
+          <button class="btn btn-sm btn-primary" id="btn-run-script">Run script</button>
+          <button class="btn btn-sm" id="btn-clear-output">Clear output</button>
         </div>
         <textarea id="code-editor" spellcheck="false"></textarea>
-        <div class="output-bar">Output Console</div>
+        <div class="output-bar">Output</div>
         <div id="code-output"></div>
       </div>
     </div>
@@ -603,48 +595,47 @@
   <div class="tab-panel" id="database-tab">
     <div class="db-sidebar">
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Add Artifact <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Add an artifact <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><label class="cl">Artifact Name *</label><input type="text" id="db-name" placeholder="e.g., Ceramic Vessel 01" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">Scan Date</label><input type="date" id="db-date" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">Scanner / Device</label><select id="db-scanner" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"><option value="">— Select —</option><option value="Einstar">Einstar</option><option value="Artec Eva">Artec Eva</option><option value="Artec Leo">Artec Leo</option><option value="Structured Light">Structured Light (Other)</option><option value="Photogrammetry">Photogrammetry</option><option value="CT Scan">CT Scan</option><option value="Other">Other</option></select></div>
-          <div class="cg"><label class="cl">Material Type</label><select id="db-material" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"><option value="">— Select —</option><option value="Ceramic">Ceramic</option><option value="Stone">Stone</option><option value="Metal">Metal</option><option value="Bone">Bone</option><option value="Wood">Wood</option><option value="Glass">Glass</option><option value="Textile">Textile</option><option value="Composite">Composite</option><option value="Unknown">Unknown</option></select></div>
-          <div class="cg"><label class="cl">Researcher</label><input type="text" id="db-researcher" placeholder="Name or initials" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">OBJ Filename</label><input type="text" id="db-filename" placeholder="e.g., VB.04.08.2026.obj" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;"></div>
-          <div class="cg"><label class="cl">Notes / Description</label><textarea id="db-notes" placeholder="Condition, provenance, analysis notes…" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;min-height:70px;font-family:inherit;resize:vertical;"></textarea></div>
-          <div class="cg"><button class="btn btn-primary btn-sm btn-block" id="btn-db-add">Add to Database</button></div>
+          <div class="cg"><label class="cl">Artifact name (required)</label><input type="text" id="db-name" placeholder="e.g., Ceramic Vessel 01"></div>
+          <div class="cg"><label class="cl">Scan date</label><input type="date" id="db-date"></div>
+          <div class="cg"><label class="cl">Scanner or device</label><select id="db-scanner"><option value="">Choose…</option><option value="Einstar">Einstar</option><option value="Artec Eva">Artec Eva</option><option value="Artec Leo">Artec Leo</option><option value="Structured Light">Structured Light (Other)</option><option value="Photogrammetry">Photogrammetry</option><option value="CT Scan">CT Scan</option><option value="Other">Other</option></select></div>
+          <div class="cg"><label class="cl">Material</label><select id="db-material"><option value="">Choose…</option><option value="Ceramic">Ceramic</option><option value="Stone">Stone</option><option value="Metal">Metal</option><option value="Bone">Bone</option><option value="Wood">Wood</option><option value="Glass">Glass</option><option value="Textile">Textile</option><option value="Composite">Composite</option><option value="Unknown">Unknown</option></select></div>
+          <div class="cg"><label class="cl">Researcher</label><input type="text" id="db-researcher" placeholder="Name or initials"></div>
+          <div class="cg"><label class="cl">OBJ file name</label><input type="text" id="db-filename" placeholder="e.g., VB.04.08.2026.obj"></div>
+          <div class="cg"><label class="cl">Notes</label><textarea id="db-notes" placeholder="Condition, provenance, analysis notes…" style="min-height:70px"></textarea></div>
+          <div class="cg"><button class="btn btn-primary btn-sm btn-block" id="btn-db-add">Add to the database</button></div>
         </div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Server <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Server <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><label class="cl">Server URL</label><input type="text" id="db-server-url" placeholder="http://localhost:5005" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;font-family:monospace;"></div>
+          <div class="cg"><label class="cl">Server address</label><input type="text" id="db-server-url" placeholder="http://localhost:5005"></div>
           <div class="cg"><button class="btn btn-sm btn-block" id="btn-db-server-connect">Connect</button></div>
-          <div id="db-server-status-msg" style="font-size:10.5px;margin-top:4px;display:none"></div>
-          <div class="cg" style="margin-top:4px"><div style="font-size:10.5px;color:var(--text2);line-height:1.5;">Enter the address of the shared database server. Each computer that should share the catalog needs to connect to the same URL.</div></div>
+          <div id="db-server-status-msg" class="note" style="display:none"></div>
+          <div class="cg" style="margin-top:4px"><div class="note">Enter the address of the shared database server. Each computer that should share the catalog needs to connect to the same URL.</div></div>
         </div>
       </div>
       <div class="sidebar-section">
-        <div class="ss-header" onclick="toggleSS(this)">Export <span class="ss-arrow">▾</span></div>
+        <button type="button" class="ss-header" aria-expanded="true" onclick="toggleSS(this)">Export <span class="ss-arrow">▾</span></button>
         <div class="ss-body">
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-db-export-csv">Export All as CSV</button></div>
-          <div class="cg"><button class="btn btn-sm btn-block" id="btn-db-export-json">Export All as JSON</button></div>
-          <div class="cg" style="margin-top:6px"><div style="font-size:10.5px;color:var(--text2);line-height:1.5;">Records are stored in your browser (localStorage). Export regularly to back up your catalog.</div></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-db-export-csv">All records (CSV)</button></div>
+          <div class="cg"><button class="btn btn-sm btn-block" id="btn-db-export-json">All records (JSON)</button></div>
+          <div class="cg" style="margin-top:6px"><div class="note">Records are stored in your browser (localStorage). Export regularly to back up your catalog.</div></div>
         </div>
       </div>
     </div>
     <div class="db-main">
       <div class="db-toolbar">
-        <h2>Artifact Catalog</h2>
-        <input type="text" class="db-search" id="db-search" placeholder="Search by name, material, researcher…">
-        <span id="db-count-label" style="font-size:11.5px;color:var(--text2);white-space:nowrap;">0 records</span>
-        <span id="db-server-badge" style="font-size:11px;color:var(--text2);white-space:nowrap;margin-left:8px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;" title="">Server offline</span>
+        <h2>Artifact catalogue</h2>
+        <input type="text" class="db-search" id="db-search" placeholder="Search by name, material, or researcher">
+        <span id="db-count-label" class="note" style="margin:0;white-space:nowrap">0 records</span>
+        <span id="db-server-badge" title="">Server offline</span>
       </div>
       <div class="db-table-wrap" id="db-table-wrap">
         <div class="db-empty" id="db-empty">
-          <div class="db-empty-icon">🗄️</div>
-          <div style="font-size:14px;font-weight:600;margin-bottom:6px;">No artifacts yet</div>
-          <div style="font-size:12px;">Use the form on the left to add your first record.</div>
+          <div class="db-empty-title">No artifacts yet</div>
+          <div style="font-size:15px">Use the form on the left to add your first record.</div>
         </div>
         <table class="db-table" id="db-table" style="display:none">
           <thead><tr><th>#</th><th>Name</th><th>Scan Date</th><th>Scanner</th><th>Material</th><th>Researcher</th><th>OBJ File</th><th>Notes</th><th>Added</th><th>File / Source</th><th></th></tr></thead>
@@ -659,11 +650,10 @@
     <div class="about-hero-banner">
       <div class="about-body" style="padding-top:0;padding-bottom:0">
         <div class="about-hero">
-          <div class="about-logo-block">M</div>
-          <div class="about-hero-text">
+                    <div class="about-hero-text">
             <h2>MIRL 3D Artifact Analyzer</h2>
-            <p>A browser-based tool for uploading, visualizing, and quantitatively analyzing 3D-scanned cultural artifacts. Developed for the <strong style="color:var(--ink)">MIRL (Material / Image Research Lab)</strong> at UC Santa Barbara to support structured-light scanning workflows and surface analysis research.</p>
-            <div style="margin-top:12px"><span class="about-badge">v2</span><span class="about-badge">UC Santa Barbara</span><span class="about-badge">Active Development</span></div>
+            <p>A browser-based tool for uploading, visualizing, and quantitatively analyzing 3D-scanned cultural artifacts. Developed for the <strong>MIRL (Material / Image Research Lab)</strong> at UC Santa Barbara to support structured-light scanning workflows and surface analysis research.</p>
+            <div style="margin-top:12px"><span class="about-badge">v2</span><span class="about-badge">UC Santa Barbara</span><span class="about-badge">Active development</span></div>
           </div>
         </div>
       </div>
@@ -675,9 +665,9 @@
           <ul><li>3D mesh viewer with render modes &amp; backgrounds</li><li>Mean, Gaussian &amp; curvedness surface analysis</li><li>Interactive cross-section clipping plane</li><li>Side-by-side model comparison</li><li>Surface annotation with 3D pin markers</li><li>Custom JavaScript analysis scripts</li><li>PyVista backend integration for research-grade curvature</li><li>Export: curvature CSV, annotations JSON/CSV, screenshot</li></ul>
         </div>
         <div class="about-card">
-          <h3>Tech Stack</h3>
+          <h3>Tech stack</h3>
           <ul><li>Three.js r0.160: 3D rendering</li><li>OBJLoader / MTLLoader: file support</li><li>CSS2DRenderer: annotation labels</li><li>Vanilla HTML/CSS/JS: no build step</li><li>Flask + PyVista + NumPy: optional backend</li></ul>
-          <div style="margin-top:14px"><h3 style="margin-bottom:8px">How to Use</h3><p>Open in Chrome and drag an OBJ file onto the Viewer tab. Use the sidebar controls to explore surface analysis. Run the optional Python backend (<code style="font-size:11px;background:var(--bg);padding:1px 4px;border-radius:3px;">mirl-backend.py</code>) for higher-accuracy PyVista curvature.</p></div>
+          <div style="margin-top:14px"><h3 style="margin-bottom:8px">How to use</h3><p>Open in Chrome and drag an OBJ file onto the Viewer tab. Use the sidebar controls to explore surface analysis. Run the optional Python backend (<code>mirl-backend.py</code>) for higher-accuracy PyVista curvature.</p></div>
         </div>
         <div class="about-card">
           <h3>Team</h3>
@@ -685,12 +675,12 @@
           <div class="about-team-row"><span>Jeff O'Brien</span><span class="about-team-role">Principal Investigator / Curator</span></div>
         </div>
         <div class="about-card">
-          <h3>Contact &amp; Links</h3>
+          <h3>Contact and links</h3>
           <p style="margin-bottom:10px;">MIRL (Material / Image Research Lab)<br>UC Santa Barbara</p>
-          <ul><li>Email: <a href="mailto:mirl@arthistory.ucsb.edu" style="color:var(--accent)">mirl@arthistory.ucsb.edu</a></li><li>Lab website: <a href="https://mirl.arthistory.ucsb.edu/about/" target="_blank" style="color:var(--accent)">mirl.arthistory.ucsb.edu</a></li><li>Department: History of Art and Architecture</li><li>GitHub: <a href="https://github.com/mirl-ucsb" target="_blank" style="color:var(--accent)">github.com/mirl-ucsb</a></li></ul>
+          <ul><li>Email: <a href="mailto:mirl@arthistory.ucsb.edu">mirl@arthistory.ucsb.edu</a></li><li>Lab website: <a href="https://mirl.arthistory.ucsb.edu/about/" target="_blank">mirl.arthistory.ucsb.edu</a></li><li>Department: History of Art and Architecture</li><li>GitHub: <a href="https://github.com/mirl-ucsb" target="_blank">github.com/mirl-ucsb</a></li></ul>
         </div>
       </div>
-      <div class="about-footer">MIRL 3D Artifact Analyzer v2 &nbsp;·&nbsp; MIRL (Material / Image Research Lab) &nbsp;·&nbsp; UC Santa Barbara<br>Built with Three.js, Flask, and PyVista</div>
+      <div class="about-footer">MIRL 3D Artifact Analyzer, version 2. Material / Image Research Lab, UC Santa Barbara.<br>Built with Three.js, Flask, and PyVista.</div>
     </div>
   </div>
 
@@ -698,14 +688,14 @@
 
 <div id="ann-modal">
   <div class="ann-modal-box">
-    <h3>Add Annotation</h3>
+    <h3>Add an annotation</h3>
     <label>Title</label>
     <input type="text" id="ann-title-input" placeholder="e.g., Tool mark, Crack, Glaze break…">
     <label>Notes</label>
     <textarea id="ann-note-input" placeholder="Describe the feature at this location…"></textarea>
     <div class="ann-modal-actions">
       <button class="btn btn-sm" id="ann-cancel">Cancel</button>
-      <button class="btn btn-sm btn-primary" id="ann-save">Save Annotation</button>
+      <button class="btn btn-sm btn-primary" id="ann-save">Save annotation</button>
     </div>
   </div>
 </div>

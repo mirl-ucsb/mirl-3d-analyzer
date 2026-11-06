@@ -1,17 +1,17 @@
 // ══════════════════════════════════════════
-//  MIRL 3D Artifact Analyzer — entry point
+//  MIRL 3D Artifact Analyzer: entry point
 //
 //  Imports all modules for their side effects (event wiring, initial renders)
 //  and kicks off the shared render loop.
 // ══════════════════════════════════════════
 
 // Side-effect imports: order matters only for a few pairs.
-//   1) core (state, scenes) first — everything downstream reads from these.
-//   2) analysis + viewer — pure logic + view-state wiring.
-//   3) features — annotations, compare, scripts, database (have event listeners).
-//   4) io + backend — file upload, exports, backend polling.
-//   5) ui — generic tab / sidebar / event handlers (last so refs resolve).
-//   6) animate — start the render loop.
+//   1) core (state, scenes) first: everything downstream reads from these.
+//   2) analysis + viewer: pure logic + view-state wiring.
+//   3) features: annotations, compare, scripts, database (have event listeners).
+//   4) io + backend: file upload, exports, backend polling.
+//   5) ui: generic tab / sidebar / event handlers (last so refs resolve).
+//   6) animate: start the render loop.
 
 import './core/state.js';
 import './core/scenes.js';

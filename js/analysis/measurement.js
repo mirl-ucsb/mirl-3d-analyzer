@@ -102,12 +102,12 @@ document.getElementById('btn-measure-toggle').addEventListener('click', () => {
   Measure.active = !Measure.active;
   const btn = document.getElementById('btn-measure-toggle');
   if (Measure.active) {
-    btn.textContent = '✓ Measurement Active'; btn.classList.add('btn-primary');
+    btn.textContent = '✓ Measuring: click two points'; btn.classList.add('btn-primary');
     renderer.domElement.style.cursor = 'crosshair';
-    // Deactivate brush — late import to avoid circular-load edge case
+    // Deactivate brush: late import to avoid circular-load edge case
     import('./surface-texture.js').then(m => m.deactivateBrush());
   } else {
-    btn.textContent = 'Enable Measurement Mode'; btn.classList.remove('btn-primary');
+    btn.textContent = 'Turn on measuring'; btn.classList.remove('btn-primary');
     renderer.domElement.style.cursor = '';
     if (Measure.pendingMarker) { scene.remove(Measure.pendingMarker); Measure.pendingMarker = null; }
     Measure.pending = null;

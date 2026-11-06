@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  ANNOTATIONS — click-to-place 3D pin markers with labels
+//  ANNOTATIONS: click-to-place 3D pin markers with labels
 // ══════════════════════════════════════════
 
 import * as THREE from 'three';
@@ -81,7 +81,7 @@ window.deleteAnnotation=deleteAnnotation;
 
 export function renderAnnotationList() {
   const el=document.getElementById('ann-list');
-  if(App.annotations.length===0){el.innerHTML='<div style="font-size:11.5px;color:var(--text2);">No annotations yet.</div>';return;}
+  if(App.annotations.length===0){el.innerHTML='<div class="note" style="margin:0">No annotations yet.</div>';return;}
   el.innerHTML=App.annotations.map((a,i)=>`
     <div class="ann-item">
       <div class="ann-item-title">

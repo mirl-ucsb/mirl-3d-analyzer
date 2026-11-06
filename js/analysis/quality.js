@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  QUALITY METRICS — mesh density, uniformity, open edges → A/B/C grade
+//  QUALITY METRICS: mesh density, uniformity, open edges → A/B/C grade
 // ══════════════════════════════════════════
 
 import * as THREE from 'three';
@@ -26,7 +26,7 @@ export function computeQuality(geo) {
 
   // Build position-canonical index map so edge deduplication works regardless of
   // whether the geometry uses shared vertex indices (OBJLoader r160 creates indexed
-  // geometry but with no shared indices — every vertex is unique in the index buffer).
+  // geometry but with no shared indices: every vertex is unique in the index buffer).
   const posToCanon = new Map();
   const canon = new Int32Array(nV);
   for (let i = 0; i < nV; i++) {

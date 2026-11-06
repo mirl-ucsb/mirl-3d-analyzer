@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  SHAPE INDEX — Koenderink & van Doorn (1992) surface shape classification
+//  SHAPE INDEX: Koenderink & van Doorn (1992) surface shape classification
 //
 //  Shape Index  SI = (2/π) · arctan((k1+k2)/(k1-k2)),  k1 ≥ k2
 //  SI ∈ [-1,+1]:  -1 = perfect cup (spherical pit)
@@ -7,7 +7,7 @@
 //                 +1 = perfect cap (spherical peak)
 //  Undefined at umbilics (k1 = k2); assigned to bin 4 (Saddle/Flat).
 //
-//  Curvedness  C = sqrt((k1²+k2²)/2)  — measures magnitude of bending,
+//  Curvedness  C = sqrt((k1²+k2²)/2): measures magnitude of bending,
 //  units 1/length.  C = 0 on a plane, C = 1/R on a sphere of radius R.
 // ══════════════════════════════════════════
 
@@ -29,15 +29,15 @@ export const SI_LABELS = [
  * Matches the nine SI bins 0–8 in order.
  */
 export const SI_COLORMAP = [
-  '#1a4a8a', // 0 Cup          — deep blue
-  '#2e7abf', // 1 Trough       — blue
-  '#55a3d6', // 2 Rut          — sky blue
-  '#91c7e0', // 3 Saddle-Rut   — pale blue
-  '#c0c0c0', // 4 Saddle/Flat  — neutral grey
-  '#e8c47a', // 5 Saddle-Ridge — gold
-  '#e07832', // 6 Ridge        — orange
-  '#c82828', // 7 Dome         — red
-  '#7a0000', // 8 Cap          — dark red
+  '#1a4a8a', // 0 Cup: deep blue
+  '#2e7abf', // 1 Trough: blue
+  '#55a3d6', // 2 Rut: sky blue
+  '#91c7e0', // 3 Saddle-Rut: pale blue
+  '#c0c0c0', // 4 Saddle/Flat: neutral grey
+  '#e8c47a', // 5 Saddle-Ridge: gold
+  '#e07832', // 6 Ridge: orange
+  '#c82828', // 7 Dome: red
+  '#7a0000', // 8 Cap: dark red
 ];
 
 // Bin boundary at bin b starts at: -1 + b*(2/9)
@@ -49,8 +49,8 @@ const _BIN_WIDTH = 2 / 9; // ≈ 0.2222
  * Inputs are the principal curvature arrays produced by computeCurvature() in
  * curvature.js (App.curv.k1, App.curv.k2), both length nV.
  *
- * @param {Float32Array} k1 — max principal curvature per vertex (k1 ≥ k2)
- * @param {Float32Array} k2 — min principal curvature per vertex
+ * @param {Float32Array} k1: max principal curvature per vertex (k1 ≥ k2)
+ * @param {Float32Array} k2: min principal curvature per vertex
  * @returns {{
  *   shapeIndex:          Float32Array,  // [-1,+1], NaN at umbilics
  *   curvedness:          Float32Array,  // [0,∞), units 1/length
@@ -82,7 +82,7 @@ export function computeShapeIndex(k1, k2) {
     curvedness[i] = C;
     cSum += C; cSumSq += C*C; cVals.push(C);
 
-    // Shape Index — undefined at umbilics (k1 = k2, denom = 0)
+    // Shape Index: undefined at umbilics (k1 = k2, denom = 0)
     let si;
     if (Math.abs(denom) < 1e-12) {
       si = NaN;

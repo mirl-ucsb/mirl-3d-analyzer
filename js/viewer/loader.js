@@ -45,7 +45,7 @@ export function loadSTLPLY(files, onDone) {
   showLoad('Loading model…');
 
   const onGeo = rawGeo => {
-    // STL triangle soups have duplicate vertices — merge for better curvature
+    // STL triangle soups have duplicate vertices: merge for better curvature
     let geo = mergeVertices(rawGeo); // fuse coincident verts for both STL and PLY
     geo.computeVertexNormals();
     geo.computeBoundingBox();
@@ -134,7 +134,7 @@ export function loadMainModel(files) {
       if (chkRS) { chkRS.checked = false; document.getElementById('rs-controls').style.display = 'none'; }
 
       App.curv=computeCurvature(geo);
-      // Shape Index is O(n) — compute immediately from k1/k2
+      // Shape Index is O(n): compute immediately from k1/k2
       const _si=computeShapeIndex(App.curv.k1, App.curv.k2);
       App.curv.shapeIndex=_si.shapeIndex;
       App.curv.classification=_si.classification;

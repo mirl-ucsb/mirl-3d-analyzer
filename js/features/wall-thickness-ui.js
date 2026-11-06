@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  WALL THICKNESS UI — wires sidebar controls to computeWallThickness
+//  WALL THICKNESS UI: wires sidebar controls to computeWallThickness
 // ══════════════════════════════════════════
 
 import * as THREE from 'three';
@@ -55,8 +55,8 @@ document.getElementById('btn-wt-compute').addEventListener('click', () => {
     const fmtPct = v => isNaN(v) ? 'N/A' : v.toFixed(1) + ' %';
 
     document.getElementById('wt-inline').innerHTML =
-      `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:7px">` +
-      `Wall Thickness · ${numRays} rays · ${coneAngle}° cone</div>` +
+      `<div class="result-head">` +
+      `Wall thickness · ${numRays} rays · ${coneAngle}° cone</div>` +
       `<div class="rrow"><span class="rkey">Mean</span><span class="rval">${fmt(mean)}</span></div>` +
       `<div class="rrow"><span class="rkey">Median</span><span class="rval">${fmt(median)}</span></div>` +
       `<div class="rrow"><span class="rkey">Std dev</span><span class="rval">${fmt(stddev)}</span></div>` +
@@ -86,7 +86,7 @@ document.getElementById('btn-wt-compute').addEventListener('click', () => {
       App.mesh.material.vertexColors = true;
       App.mesh.material.color.set(0xffffff);
       App.mesh.material.needsUpdate = true;
-      document.getElementById('legend-title').textContent = 'Wall Thickness';
+      document.getElementById('legend-title').textContent = 'Wall thickness';
       document.getElementById('legend-bar').style.background = legendGradient('plasma');
       const scl = Scale.mmPerUnit || 1, ul = Scale.mmPerUnit ? Scale.unit : 'units';
       document.getElementById('legend-min').textContent = (lo * scl).toExponential(2) + ' ' + ul;

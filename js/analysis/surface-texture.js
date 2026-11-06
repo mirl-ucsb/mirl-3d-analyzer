@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════
-//  SURFACE TEXTURE — ISO 25178 roughness (Sa, Sq, Sz, Sp, Sv, Ssk, Sku)
+//  SURFACE TEXTURE: ISO 25178 roughness (Sa, Sq, Sz, Sp, Sv, Ssk, Sku)
 //
 //  Workflow: user paints a region on the mesh with the brush, then clicks
 //  Compute. We fit a local plane around each painted vertex (k-ring PCA)
@@ -19,7 +19,7 @@ export const Brush = { active: false, radius: 5, kRing: 2, selected: new Set(), 
 
 export function deactivateBrush() {
   Brush.active = false;
-  document.getElementById('btn-brush-toggle').textContent = 'Enable Region Brush';
+  document.getElementById('btn-brush-toggle').textContent = 'Turn on the region brush';
   document.getElementById('btn-brush-toggle').classList.remove('btn-primary');
   if (!Measure.active) renderer.domElement.style.cursor = '';
 }
@@ -28,12 +28,12 @@ document.getElementById('btn-brush-toggle').addEventListener('click', () => {
   if (!App.mesh) { alert('Load a model first.'); return; }
   Brush.active = !Brush.active;
   if (Brush.active) {
-    document.getElementById('btn-brush-toggle').textContent = '✓ Brush Active: click or drag';
+    document.getElementById('btn-brush-toggle').textContent = '✓ Brushing: click or drag';
     document.getElementById('btn-brush-toggle').classList.add('btn-primary');
     renderer.domElement.style.cursor = 'crosshair';
     if (Measure.active) {
       Measure.active = false;
-      document.getElementById('btn-measure-toggle').textContent = 'Enable Measurement Mode';
+      document.getElementById('btn-measure-toggle').textContent = 'Turn on measuring';
       document.getElementById('btn-measure-toggle').classList.remove('btn-primary');
     }
   } else {
@@ -112,7 +112,7 @@ function jacobi3(M) {
   return { vals: [a[0][0], a[1][1], a[2][2]], vecs: [[v[0][0], v[1][0], v[2][0]], [v[0][1], v[1][1], v[2][1]], [v[0][2], v[1][2], v[2][2]]] };
 }
 
-// adjResult is { adj, canon, canonOrig } from getMeshAdj — canonical-indexed.
+// adjResult is { adj, canon, canonOrig } from getMeshAdj: canonical-indexed.
 function kRingNeighbors(adjResult, centerOrig, k) {
   const { adj, canon } = adjResult;
   const cc = canon[centerOrig];
@@ -191,7 +191,7 @@ document.getElementById('btn-roughness-compute').addEventListener('click', () =>
   const sc = Scale.mmPerUnit || 1, u = Scale.mmPerUnit ? Scale.unit : 'units';
   const fmt = v => (v * sc).toExponential(3) + ' ' + u;
   document.getElementById('roughness-inline').innerHTML = `
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:7px">
+    <div class="result-head">
       ISO 25178 · ${n.toLocaleString()} verts · k=${k}
     </div>
     <div class="rrow"><span class="rkey">Sa: mean roughness</span><span class="rval">${fmt(Sa)}</span></div>
@@ -219,7 +219,7 @@ document.getElementById('btn-roughness-compute').addEventListener('click', () =>
       const { Sdr, SdrPercent, Sdq, warnings: sdWarn } = computeSdrSdq(geo, brushedFaces);
       const fmtDim = v => isNaN(v) ? 'N/A' : v.toExponential(3);
       document.getElementById('roughness-inline').innerHTML +=
-        `<div style="margin-top:7px;padding-top:5px;border-top:1px solid var(--border)"></div>` +
+        `<div style="margin-top:8px"></div>` +
         `<div class="rrow"><span class="rkey">Sdr: developed area ratio</span><span class="rval">${fmtDim(SdrPercent)} %</span></div>` +
         `<div class="rrow"><span class="rkey">Sdq: RMS gradient</span><span class="rval">${fmtDim(Sdq)}</span></div>`;
       if (sdWarn.length) console.warn('Sdr/Sdq warnings:', sdWarn);
@@ -246,7 +246,7 @@ document.getElementById('btn-roughness-compute').addEventListener('click', () =>
     App.geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
     App.mesh.material.vertexColors = true; App.mesh.material.color.set(0xffffff); App.mesh.material.needsUpdate = true;
     const scl = Scale.mmPerUnit || 1, ul = Scale.mmPerUnit ? Scale.unit : 'units';
-    document.getElementById('legend-title').textContent = 'Surface Roughness';
+    document.getElementById('legend-title').textContent = 'Surface roughness';
     document.getElementById('legend-bar').style.background = legendGradient('turbo');
     document.getElementById('legend-min').textContent = (lo * scl).toExponential(2) + ' ' + ul;
     document.getElementById('legend-max').textContent = (hi * scl).toExponential(2) + ' ' + ul;
